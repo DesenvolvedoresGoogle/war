@@ -3,11 +3,11 @@
 var GamesController = require('../../app/controllers/games');
 
 describe('GamesController', function () {
-  context('#index', function () {
+  context.only('#index', function () {
     it('should list all games', function (done) {
-      GameController.index(null, { json: function () {
-        catching(done, function () {
-        });
+      GamesController.index(null, { json: function (res) {
+        res.should.deep.equal(GamesController._waiting);
+        done();
       }});
     });
   });
@@ -24,7 +24,7 @@ describe('GamesController', function () {
     });
   });
   
-  context.only('#waiting', function () {
+  context('#waiting', function () {
     it('should add player to the waiting list', function () {
       var player = 'player' + Math.random();
       GamesController.waiting({
