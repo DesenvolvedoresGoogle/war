@@ -23,6 +23,8 @@
   "devDependencies": {
     "chai": "^1.9.1",
     "factory-girl": "git://github.com/tadeuzagallo/factory_girl.git#dev",
-    "mocha": "^1.18.2"
+    "mocha": "^1.18.2",
+    "require-subvert": "0.0.3",
+    "sinon": "^1.9.1"
   }
 }
