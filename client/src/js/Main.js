@@ -1,57 +1,31 @@
 
 var Game = function (options) {
-	console.log('running...');
-
 	var app = {},
-		defaults = {
-		    zoom: 3,
-		    center: new google.maps.LatLng(-34.397, 150.644),
-		    players: [
-		    	{
-		    		username: 'Default User',
-		    		pinColor: 'FFFFFF',
-		    		countries: []
-		    	}
-		    ]
+		mapSettings = {
+		    zoom: 4,
+		    minZoom: 4,
+		    disableDefaultUI: true,
+		    center: new google.maps.LatLng(-14.0634424, -50.2827613)
 		};
 
-	/*
-	* Recursively merge properties of two objects 
-	* @todo: improvements and refactoring.
-	* http://stackoverflow.com/questions/171251/how-can-i-merge-properties-of-two-javascript-objects-dynamically
-	*/
-	app.mergeRecursive = function(obj1, obj2) {
-		for (var p in obj2) {
-			try {
-				// Property in destination object set; update its value.
-				if (obj2[p].constructor == Object) {
-					obj1[p] = app.mergeRecursive(obj1[p], obj2[p]);
-				}
-				else {
-					obj1[p] = obj2[p];
-				}
-			}
-			catch(e) {
-				// Property in destination object not set; create it and set its value.
-				obj1[p] = obj2[p];
-			}
-		}
-
-		return obj1;
-	};
-
 	app.init = function () {
-		app.settings = app.mergeRecursive(defaults, options);
+		app.options = options;
 		app.setup();
 		app.bind();
-		app.buildMarkers(app.settings.players[0]);
+		app.buildMarkers(app.options.players[0]);
 	};
 
 	app.setup = function () {
 		app.game = document.getElementById('game');
-		app.map = new google.maps.Map(app.game, app.settings);
+		app.map = new google.maps.Map(app.game, mapSettings);
 		app.geocoder = new google.maps.Geocoder();
 		app.markers = [];
+
+		var ctaLayer = new google.maps.KmlLayer({
+			url: 'https://sites.google.com/a/gmapas.com/home/poligonos-ibge/poligonos-estados-do-brasil/Estados.kmz'
+		});
+		
+		ctaLayer.setMap(app.map);
 	};
 
 	app.bind = function () {
@@ -84,7 +58,7 @@ var Game = function (options) {
 				addressComponentTypes = geocoderAddressComponent[j].types;
 
 				for (var k in addressComponentTypes) {
-					if (addressComponentTypes[k] == 'country') {
+					if (addressComponentTypes[k] == 'administrative_area_level_1') {
 						return address;
 					}
 				}
@@ -123,13 +97,6 @@ var Game = function (options) {
 
 
 
-
-
-
-
-
-
-
 var dummy = {
     players: [
     	{
@@ -152,3 +119,5 @@ var dummy = {
 };
 
 new Game(dummy);
+
+
