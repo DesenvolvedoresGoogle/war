@@ -16,17 +16,12 @@ describe('GamesController', function () {
     it('should create a new game', function (done) {
       var length = GamesController._games.length;
 
-      GamesController.create({
-        body: {
-          players: ['Tadeu', 'Bernardo']
-        }
-      }, {
-        json: function (res) {
+      GamesController.create(['Tadeu', 'Bernardo'],
+        function (res) {
           catching(done, function () {
             GamesController._games.length.should.be.equal(length + 1);
           });
-        }
-      });
+        });
     });
 
     it('should validate presence of 2 names', function (done) {

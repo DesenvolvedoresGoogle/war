@@ -6,16 +6,10 @@ var State = require('../models/state');
 var GamesController = {
   _waiting: [],
   _games: [],
-  index: function (req, res) {
-    res.json(GamesController._waiting);
+  sendUpdate: function () {
+    GamesController.socket.emit('games', GamesController._waiting);
   },
-  create: function (req, res) {
-    var players = req && req.body && req.body.players;
-
-    if (!(players instanceof Array) || players.length !== 2) {
-      return res.json(422, { message: 'Requisição inválida' });
-    }
-
+  create: function (players) {
     State.find({}, function (err, states) {
       // Knuth shuffle
       for (var i = 0, l = states.length; i < l; i++) {
@@ -26,27 +20,22 @@ var GamesController = {
       }
 
       GamesController._waiting = GamesController._waiting.filter(function (username) {
-        return !~req.body.players.indexOf(username);
+        return !~players.indexOf(username);
       });
+      GamesController.sendUpdate();
 
-      var players = req.body.players.map(function (username) {
+      var players = players.map(function (username) {
         return { username: username, states: states.splice(0, 13) };
       });
 
       var game = { id: GamesController._games.length, players: players };
       GamesController._games.push(game);
-
-      res.json({ message: 'Game created!' , game: game });
     });
   },
-  waiting: function (req, res) {
-    var player = req && req.body && req.body.player;
-
+  waiting: function (player) {
     if (player) {
-      GamesController._waiting.push(req.body.player);
-      res.json({ message: 'Player added to the waiting list' });
-    } else {
-      res.json(422, { message: 'Requisição inválida' });
+      GamesController._waiting.push(player);
+      GamesController.sendUpdate();
     }
   }
 };
