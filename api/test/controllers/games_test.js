@@ -35,7 +35,7 @@ describe('GamesController', function () {
             expect(Game.prototype.save.calledOnce).to.be.true;
           });
         }
-      })
+      });
     });
   });
 });
