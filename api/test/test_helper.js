@@ -6,7 +6,7 @@ var chai = require('chai');
 var sinon = require('sinon');
 var requireSubvert = require('require-subvert');
 
-mongoose.connect('mongodb://localhost/hackathon-war/test');
+mongoose.connect('mongodb://localhost/hackathon-war-test');
 
 FactoryGirl.definitionFilePaths = [__dirname + '/factories'];
 FactoryGirl.findDefinitions();
