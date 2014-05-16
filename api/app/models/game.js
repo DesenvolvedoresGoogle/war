@@ -7,7 +7,7 @@ try {
 } catch (err) {}
 
 var GameSchema = {
-  users: User.schema
+  players: { type: [User.schema], required: true }
 };
 
 var Game = mongoose.model('Game', GameSchema);
