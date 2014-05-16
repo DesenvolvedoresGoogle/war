@@ -6,17 +6,25 @@ html, body, #game {
 }
 
 body {
-	font: normal 10px/1.5 georgia, serif;
 	color: #444;
 }
 
 h1 {
-	font-size: 5em;
+	font-size: 6em;
+  font-family: 'Gravitas One', cursive;
+  font-weight: bold;
+  text-align: center;
+}
+
+table tr th:last-child,
+table tr td:last-child {
+  text-align: center;
 }
 
 #game {}
 
 #start-screen {
 	font-size: 1.4em;
+  display: block;
 }
 

@@ -3,28 +3,46 @@
 <head>
 	<title>Hackathon War</title>
 	<meta charset="UTF-8">
+  <link href='http://fonts.googleapis.com/css?family=Gravitas+One' rel='stylesheet' type='text/css'>
+  <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
 	<link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-	<div id="start-screen">
-		<h1>hackathon war</h1>
-		<form id="form" action="javascript:;">
-			<label for="name">Nome</label>
-			<input type="text" name="name" id="name">
-			<ul id="waiting-list">
-				<!-- <li>
-					<span>Jogo 01</span>
-					<a class="btn-enter-game" href="javascript:;">Entrar</a>
-				</li> -->
-			</ul>
-			<a id="btn-new-game" href="javascript:;">Novo Jogo</a>
-		</form>
+	<div id="start-screen" class="modal fade in" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1>WAR</h1>
+        </div>
+
+        <div class="modal-body">
+          <input type="text" class="form-control" name="name" placeholder="Nome de usuário" id="username">
+
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Usuário</th>
+                <th>&plus;</th>
+              </tr>
+            </thead>
+            <tbody id="waiting-list"></tbody>
+          </table>
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" id="btn-new-game" class="btn btn-default" data-dismiss="modal">&plus; Novo Jogo</button>
+        </div>
+      </div>
+    </div>
 	</div>
 
 	<div id="game"></div>
+  <div class="modal-backdrop fade in"></div>
 
 	<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
-	<script src="http://192.168.2.1:3000/socket.io/socket.io.js"></script>
+	<script src="http://localhost:3000/socket.io/socket.io.js"></script>
+  <script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+  <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
 	<script src="js/application.js"></script>
 </body>
 </html>

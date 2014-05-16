@@ -1,3 +1,5 @@
+'use strict';
+
 var possibilities = {
 	AC: ['AM', 'RO'],
 	AM: ['AC', 'RO', 'RR', 'PA', 'MT'],
@@ -97,7 +99,9 @@ var Game = function (options) {
 	};
 
 	app.buildMarkers = function (player) {
-		console.log(player)
+    if (!player) {
+      return;
+    }
 
 		var current = null,
 			latLng = null,
@@ -123,43 +127,11 @@ var Game = function (options) {
 	google.maps.event.addDomListener(window, 'load', app.init);
 };
 
-
-
-var dummy = {
-    players: [
-    	{
-    		username: 'Usuário Teste',
-    		pinColor: '00ffaa',
-    		countries: [
-    			{
-    				lat: -34.397,
-    				lng: 150.644
-    			},{
-    				lat: -44.397,
-    				lng: 160.644
-    			},{
-    				lat: -54.397,
-    				lng: 170.644
-    			} 
-    		]
-    	}
-    ]
-};
-
-// new Game(dummy);
-
-
 var StartScreen = function () {
 
 	var app = {},
 		socket = io.connect('http://192.168.2.1:3000');
 	
-	// socket.on('news', function (data) {
-	// console.log(data);
-	// socket.emit('my other event', { my: 'data' });
-	// });
-	
-
 	app.init = function () {
 		app.setup();
 		app.bind();
@@ -167,55 +139,38 @@ var StartScreen = function () {
 
 	app.setup = function () {
 		app.form = document.getElementById('form');
-		app.btnEnterGame = form.getElementsByClassName('btn-enter-game');
+    app.$username = $('#username');
 		app.btnNewGame = document.getElementById('btn-new-game');
-		// app.waintingList = document.getElementById('');	
 		
 		socket.on('games', function (data) {
-			console.log('games socket')
-
 			$('#waiting-list').empty();
+      app.$username.val('');
 			
 			for (var i = 0, len = data.length; i < len; i++) {
-				console.log(data[i])
 				$('#waiting-list').append('
-					<li>
-						<span>' + data[i] + '</span>
+					<tr>
+						<td>' + data[i] + '</td>
+            <td>
 						<a class="btn-enter-game" href="javascript:;">Entrar</a>
-					</li>')
+					</td></tr>');
 			}
 		});
 
 	};
 
 	app.bind = function () {
-		// for (var i = 0, len = app.btnEnterGame.length; i < len; i++) {
-		// 	app.btnEnterGame[i].addEventListener('click', function (ev) {
-		// 		var targetElement = ev.target,
-		// 			username = targetElement.parentNode.getElementsByTagName('span')[0].innerHTML,
-		// 			arrayUsers = [];
-
-		// 		arrayUsers.push(username);
-		// 		arrayUsers.push(app.form.getElementsByTagName('input')[0].value);
-
-		// 		console.log('join-game', arrayUsers);
-		// 		socket.emit('join-game', arrayUsers);
-		// 	});
-		// }
-
 		app.btnNewGame.addEventListener('click', function (ev) {
-			var username = app.form.getElementsByTagName('input')[0].value;
+			var username = app.$username.val();
 			console.log('new-game', username);
 			socket.emit('new-game', username);
 		});
 
 
-		$('document').on('click', '.btn-enter-game', function () {
-			console.log('bind')
-			var username = $('#name').val(),
+		$(document).on('click', '.btn-enter-game', function () {
+			var username = app.$username.val(),
 				arrayUsers = [];
 
-			var a = $(this).parent().find('span').html();
+			var a = $(this).parent().prev().html();
 
 			arrayUsers.push(username);
 			arrayUsers.push(a);
@@ -231,21 +186,8 @@ var StartScreen = function () {
 		});
 	};
 
-	app.sendData = function (url, data) {
-		var xmlhttp = new XMLHttpRequest();   // new HttpRequest instance 
-			xmlhttp.open("POST", url);
-			xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-			xmlhttp.send(JSON.stringify( data ));	
-	};
-
-
 	app.init();
-
 };
 
 new StartScreen();
-
-
-
-
-
+new Game();
