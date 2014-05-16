@@ -1,3 +1,5 @@
+'use strict';
+
 var mongoose = require('mongoose');
 var User = require('./user');
 
@@ -11,5 +13,9 @@ var GameSchema = {
 };
 
 var Game = mongoose.model('Game', GameSchema);
+
+Game.schema.path('players').validate(function (value) {
+  return value.length === 2;
+}, 'O jogo deve conter 2 jogadores');
 
 module.exports = Game;

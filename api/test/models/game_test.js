@@ -10,4 +10,13 @@ describe('Game', function () {
       });
     });
   });
+
+  it('should validate that a game must have 3 players', function (done) {
+    new Game({ players: [{ username: 'john doe'}] }).save(function (err) {
+      catching(done, function () {
+        expect(err).to.have.deep.property('errors.players.message',
+                                          'O jogo deve conter 2 jogadores');
+      });
+    });
+  });
 });
