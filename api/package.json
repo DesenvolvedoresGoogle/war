@@ -4,7 +4,7 @@
   "description": "GDG Hackacthonn War board game project",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha test/**/*.js"
   },
   "repository": {
     "type": "git",
@@ -22,6 +22,7 @@
   },
   "devDependencies": {
     "chai": "^1.9.1",
+    "factory-girl": "^0.1.1",
     "mocha": "^1.18.2"
   }
 }
