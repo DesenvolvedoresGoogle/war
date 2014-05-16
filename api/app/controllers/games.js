@@ -11,6 +11,16 @@ var GamesController = {
         res.json(results);
       }
     });
+  },
+  create: function (req, res) {
+    new Game(req.body).save(function (err) {
+      if (err) {
+        console.err(err.message, err.stack);
+        res.json(422);
+      } else {
+        res.json({ message: 'Game created!' });
+      }
+    });
   }
 };
 

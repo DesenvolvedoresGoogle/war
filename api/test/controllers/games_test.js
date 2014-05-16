@@ -1,11 +1,11 @@
 'use strict';
 
-var Game = {};
+var Game = function () {};
 var GameController;
 var requireSubvert = require('require-subvert')(__dirname);
 
 describe('GamesController', function () {
-  context('#index', function (done) {
+  context('#index GET', function (done) {
     before(function () {
       requireSubvert.subvert('../../app/models/game', Game);
       GameController = requireSubvert.require('../../app/controllers/games');
@@ -22,6 +22,20 @@ describe('GamesController', function () {
           expect(Game.find.calledOnce).to.be.true;
         });
       }});
+    });
+  });
+
+  context('#index POST', function () {
+    it('should create a new game', function (done) {
+      Game.prototype.save = sinon.stub().callsArg(0);
+
+      GameController.create({}, {
+        json: function () {
+          catching(done, function () {
+            expect(Game.prototype.save.calledOnce).to.be.true;
+          });
+        }
+      })
     });
   });
 });
