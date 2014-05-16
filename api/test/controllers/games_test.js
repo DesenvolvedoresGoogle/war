@@ -29,7 +29,7 @@ describe('GamesController', function () {
     it('should create a new game', function (done) {
       Game.prototype.save = sinon.stub().callsArg(0);
 
-      GameController.create({}, {
+      GameController.create({ body: { players: [] }}, {
         json: function () {
           catching(done, function () {
             expect(Game.prototype.save.calledOnce).to.be.true;
