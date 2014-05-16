@@ -6,9 +6,25 @@
 	<link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
+	<div id="start-screen">
+		<h1>hackathon war</h1>
+		<form id="form" action="javascript:;">
+			<label for="name">Nome</label>
+			<input type="text" name="name" id="name">
+			<ul id="waiting-list">
+				<!-- <li>
+					<span>Jogo 01</span>
+					<a class="btn-enter-game" href="javascript:;">Entrar</a>
+				</li> -->
+			</ul>
+			<a id="btn-new-game" href="javascript:;">Novo Jogo</a>
+		</form>
+	</div>
+
 	<div id="game"></div>
 
 	<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
+	<script src="http://192.168.2.1:3000/socket.io/socket.io.js"></script>
 	<script src="js/application.js"></script>
 </body>
 </html>

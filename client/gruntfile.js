@@ -33,6 +33,7 @@ module.exports = function (grunt) {
 				},
 				files: {
 					'js/application.js': [
+						'src/js/zepto.js',
 						'src/js/Main.js'
 					]
 				}

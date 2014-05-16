@@ -1,14 +1,22 @@
-@import "reset";
+// @import "reset";
 
 html, body, #game {
 	width: 100%;
-	height: 100%;	
+	height: 100%;
 }
 
-#game {
-	
-	
-
-
-
+body {
+	font: normal 10px/1.5 georgia, serif;
+	color: #444;
 }
+
+h1 {
+	font-size: 5em;
+}
+
+#game {}
+
+#start-screen {
+	font-size: 1.4em;
+}
+

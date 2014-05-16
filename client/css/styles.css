@@ -1,53 +1,21 @@
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/gabrielneutzling\/www\/hackathon-war\/client\/src\/sass\/_reset\.scss}line{font-family:\000036}}
-html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video {
-  margin: 0;
-  padding: 0;
-  border: 0;
-  font-size: 100%;
-  font: inherit;
-  vertical-align: baseline;
-}
-
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/gabrielneutzling\/www\/hackathon-war\/client\/src\/sass\/_reset\.scss}line{font-family:\0000316}}
-article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section {
-  display: block;
-}
-
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/gabrielneutzling\/www\/hackathon-war\/client\/src\/sass\/_reset\.scss}line{font-family:\0000319}}
-body {
-  line-height: 1;
-}
-
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/gabrielneutzling\/www\/hackathon-war\/client\/src\/sass\/_reset\.scss}line{font-family:\0000322}}
-ol, ul {
-  list-style: none;
-}
-
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/gabrielneutzling\/www\/hackathon-war\/client\/src\/sass\/_reset\.scss}line{font-family:\0000325}}
-blockquote, q {
-  quotes: none;
-}
-
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/gabrielneutzling\/www\/hackathon-war\/client\/src\/sass\/_reset\.scss}line{font-family:\0000329}}
-blockquote:before, blockquote:after {
-  content: "";
-  content: none;
-}
-
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/gabrielneutzling\/www\/hackathon-war\/client\/src\/sass\/_reset\.scss}line{font-family:\0000335}}
-q:before, q:after {
-  content: "";
-  content: none;
-}
-
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/gabrielneutzling\/www\/hackathon-war\/client\/src\/sass\/_reset\.scss}line{font-family:\0000340}}
-table {
-  border-collapse: collapse;
-  border-spacing: 0;
-}
-
 @media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/gabrielneutzling\/www\/hackathon-war\/client\/src\/sass\/styles\.scss}line{font-family:\000033}}
 html, body, #game {
   width: 100%;
   height: 100%;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/gabrielneutzling\/www\/hackathon-war\/client\/src\/sass\/styles\.scss}line{font-family:\000038}}
+body {
+  font: normal 10px/1.5 georgia, serif;
+  color: #444;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/gabrielneutzling\/www\/hackathon-war\/client\/src\/sass\/styles\.scss}line{font-family:\0000313}}
+h1 {
+  font-size: 5em;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/gabrielneutzling\/www\/hackathon-war\/client\/src\/sass\/styles\.scss}line{font-family:\0000319}}
+#start-screen {
+  font-size: 1.4em;
 }

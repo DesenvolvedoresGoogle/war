@@ -146,7 +146,105 @@ var dummy = {
     ]
 };
 
-new Game(dummy);
+// new Game(dummy);
+
+
+var StartScreen = function () {
+
+	var app = {},
+		socket = io.connect('http://192.168.2.1:3000');
+	
+	// socket.on('news', function (data) {
+	// console.log(data);
+	// socket.emit('my other event', { my: 'data' });
+	// });
+	
+
+	app.init = function () {
+		app.setup();
+		app.bind();
+	};
+
+	app.setup = function () {
+		app.form = document.getElementById('form');
+		app.btnEnterGame = form.getElementsByClassName('btn-enter-game');
+		app.btnNewGame = document.getElementById('btn-new-game');
+		// app.waintingList = document.getElementById('');	
+		
+		socket.on('games', function (data) {
+			console.log('games socket')
+
+			$('#waiting-list').empty();
+			
+			for (var i = 0, len = data.length; i < len; i++) {
+				console.log(data[i])
+				$('#waiting-list').append('
+					<li>
+						<span>' + data[i] + '</span>
+						<a class="btn-enter-game" href="javascript:;">Entrar</a>
+					</li>')
+			}
+		});
+
+	};
+
+	app.bind = function () {
+		// for (var i = 0, len = app.btnEnterGame.length; i < len; i++) {
+		// 	app.btnEnterGame[i].addEventListener('click', function (ev) {
+		// 		var targetElement = ev.target,
+		// 			username = targetElement.parentNode.getElementsByTagName('span')[0].innerHTML,
+		// 			arrayUsers = [];
+
+		// 		arrayUsers.push(username);
+		// 		arrayUsers.push(app.form.getElementsByTagName('input')[0].value);
+
+		// 		console.log('join-game', arrayUsers);
+		// 		socket.emit('join-game', arrayUsers);
+		// 	});
+		// }
+
+		app.btnNewGame.addEventListener('click', function (ev) {
+			var username = app.form.getElementsByTagName('input')[0].value;
+			console.log('new-game', username);
+			socket.emit('new-game', username);
+		});
+
+
+		$('document').on('click', '.btn-enter-game', function () {
+			console.log('bind')
+			var username = $('#name').val(),
+				arrayUsers = [];
+
+			var a = $(this).parent().find('span').html();
+
+			arrayUsers.push(username);
+			arrayUsers.push(a);
+
+			console.log('join-game', arrayUsers);
+
+			return false;
+			socket.emit('join-game', arrayUsers);
+		});
+
+		socket.on('created-game', function (data) {
+			console.log(data);
+		});
+	};
+
+	app.sendData = function (url, data) {
+		var xmlhttp = new XMLHttpRequest();   // new HttpRequest instance 
+			xmlhttp.open("POST", url);
+			xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+			xmlhttp.send(JSON.stringify( data ));	
+	};
+
+
+	app.init();
+
+};
+
+new StartScreen();
+
 
 
 

@@ -9,7 +9,8 @@
 		"load-grunt-tasks": "~0.4.0",
 		"grunt-contrib-sass": "~0.7.3",
 		"grunt-contrib-uglify": "~0.4.0",
-		"grunt-contrib-watch": "~0.5.3"
+		"grunt-contrib-watch": "~0.5.3",
+		"socket.io": "~0.9.16"
 	},
 	"repository": {
 		"type": "git",
