@@ -9,6 +9,7 @@ try {
 
 var StateSchema = {
   name: { type: String, required: true },
+  acronym: { type: String, required: true },
   lat: { type: Number, required: true },
   lng: { type: Number, required: true }
 };

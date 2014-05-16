@@ -1,17 +1,16 @@
 'use strict';
 
-var express = require('express');
-var logger = require('morgan');
-var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
-var router = require('./app/router.js');
-var app = express();
+var GamesController = require('./app/controllers/games.js');
+var io = require('socket.io').listen(3000, '0.0.0.0');
 
 mongoose.connect('mongodb://localhost/hackathon-war-dev');
 
-app.use(bodyParser.urlencoded())
-  .use(logger())
-  .use(router);
+io.on('connection', function(socket){
+  GamesController.socket = socket;
+  GamesController.sendUpdate();
 
-app.listen(8080);
-console.log('Listening on port 8080');
+  socket.on('new-game', GamesController.waiting);
+
+  socket.on('join-game', GamesController.create);
+});
