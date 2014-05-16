@@ -3,7 +3,7 @@
 var GamesController = require('../../app/controllers/games');
 
 describe('GamesController', function () {
-  context.only('#index', function () {
+  context('#index', function () {
     it('should list all games', function (done) {
       GamesController.index(null, { json: function (res) {
         res.should.deep.equal(GamesController._waiting);
@@ -14,11 +14,44 @@ describe('GamesController', function () {
 
   context('#create', function () {
     it('should create a new game', function (done) {
-      GameController.create({ body: { players: [] }}, {
-        json: function () {
+      var length = GamesController._games.length;
+
+      GamesController.create({
+        body: {
+          players: ['Tadeu', 'Bernardo']
+        }
+      }, {
+        json: function (res) {
           catching(done, function () {
-            expect(Game.prototype.save.calledOnce).to.be.true;
+            GamesController._games.length.should.be.equal(length + 1);
           });
+        }
+      });
+    });
+
+    it('should validate presence of 2 names', function (done) {
+      GamesController.create({
+        body: {
+          players: ['Tadeu']
+        }
+      }, {
+        json: function (status, msg) {
+          status.should.equal(422);
+          done();
+        }
+      });
+    });
+
+    it('should remove the players from the waiting list', function (done) {
+      GamesController._waiting = ['Tadeu', 'Bernardo'];
+      GamesController.create({
+        body: {
+          players: ['Tadeu', 'Bernardo']
+        }
+      }, {
+        json: function () {
+          GamesController._waiting.should.be.empty;
+          done();
         }
       });
     });

@@ -10,6 +10,12 @@ var GamesController = {
     res.json(GamesController._waiting);
   },
   create: function (req, res) {
+    var players = req && req.body && req.body.players;
+
+    if (!(players instanceof Array) || players.length !== 2) {
+      return res.json(422, { message: 'Requisição inválida' });
+    }
+
     State.find({}, function (err, states) {
       // Knuth shuffle
       for (var i = 0, l = states.length; i < l; i++) {
