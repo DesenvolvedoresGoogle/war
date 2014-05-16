@@ -15,7 +15,7 @@ describe('Game', function () {
     var game = { players: [
       { username: 'john doe',
         states: [
-          { name: 'Santa Catarina', lat: 12, lng: 15 }
+          { name: 'Santa Catarina', acronym: 'SC', lat: 12, lng: 15 }
         ]
       }
     ]};
