@@ -6,7 +6,7 @@ try {
 } catch (err) {}
 
 var UserSchema = {
-  username: String
+  username: { type: String, required: true }
 };
 
 var User = mongoose.model('User', UserSchema);

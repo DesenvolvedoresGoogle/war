@@ -4,7 +4,7 @@
   "description": "GDG Hackacthonn War board game project",
   "main": "index.js",
   "scripts": {
-    "test": "mocha test/**/*.js"
+    "test": "mocha test/**/*_test.js"
   },
   "repository": {
     "type": "git",
@@ -22,7 +22,7 @@
   },
   "devDependencies": {
     "chai": "^1.9.1",
-    "factory-girl": "^0.1.1",
+    "factory-girl": "git://github.com/tadeuzagallo/factory_girl.git#dev",
     "mocha": "^1.18.2"
   }
 }
