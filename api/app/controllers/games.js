@@ -24,12 +24,13 @@ var GamesController = {
       });
       GamesController.sendUpdate();
 
-      var players = players.map(function (username) {
+      players = players.map(function (username) {
         return { username: username, states: states.splice(0, 13) };
       });
 
       var game = { id: GamesController._games.length, players: players };
       GamesController._games.push(game);
+      GamesController.socket.emit('created-game', game);
     });
   },
   waiting: function (player) {
