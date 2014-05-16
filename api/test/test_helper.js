@@ -8,8 +8,7 @@ var requireSubvert = require('require-subvert');
 
 mongoose.connect('mongodb://localhost/hackathon-war-test');
 
-FactoryGirl.definitionFilePaths = [__dirname + '/factories'];
-FactoryGirl.findDefinitions();
+chai.should();
 
 global.expect = chai.expect;
 global.sinon = sinon;

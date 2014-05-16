@@ -1,19 +1,13 @@
 'use strict';
 
-var Game = require('../models/game');
-var User = require('../models/user');
 var State = require('../models/state');
 
+
 var GamesController = {
+  _waiting: [],
+  _games: [],
   index: function (req, res) {
-    Game.find({}, function (err, results) {
-      if (err) {
-        console.error(err.message, err.stack);
-        res.json(500, { message: 'Internal server error' });
-      } else {
-        res.json(results);
-      }
-    });
+    res.json(GamesController._waiting);
   },
   create: function (req, res) {
     State.find({}, function (err, states) {
@@ -25,19 +19,29 @@ var GamesController = {
         states[j] = aux;
       }
 
-      var players = req.body.players.map(function (username) {
-        return new User({ username: username, states: states.splice(0, 13) });
+      GamesController._waiting = GamesController._waiting.filter(function (username) {
+        return !~req.body.players.indexOf(username);
       });
 
-      new Game({ players: players }).save(function (err) {
-        if (err) {
-          console.error(err.message, err.stack);
-          res.json(422);
-        } else {
-          res.json({ message: 'Game created!' , players: players });
-        }
+      var players = req.body.players.map(function (username) {
+        return { username: username, states: states.splice(0, 13) };
       });
+
+      var game = { id: GamesController._games.length, players: players };
+      GamesController._games.push(game);
+
+      res.json({ message: 'Game created!' , game: game });
     });
+  },
+  waiting: function (req, res) {
+    var player = req && req.body && req.body.player;
+
+    if (player) {
+      GamesController._waiting.push(req.body.player);
+      res.json({ message: 'Player added to the waiting list' });
+    } else {
+      res.json(422, { message: 'Requisição inválida' });
+    }
   }
 };
 
