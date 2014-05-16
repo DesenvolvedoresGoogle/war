@@ -11,8 +11,16 @@ describe('Game', function () {
     });
   });
 
-  it('should validate that a game must have 3 players', function (done) {
-    new Game({ players: [{ username: 'john doe'}] }).save(function (err) {
+  it('should validate that a game must have 2 players', function (done) {
+    var game = { players: [
+      { username: 'john doe',
+        states: [
+          { name: 'Santa Catarina', lat: 12, long: 15 }
+        ]
+      }
+    ]};
+
+    new Game(game).save(function (err) {
       catching(done, function () {
         expect(err).to.have.deep.property('errors.players.message',
                                           'O jogo deve conter 2 jogadores');
