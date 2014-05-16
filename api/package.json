@@ -1,0 +1,32 @@
+{
+  "name": "hackathon-war-api",
+  "version": "0.0.0",
+  "description": "GDG Hackacthonn War board game project",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha test/**/*_test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gneutzling/hackathon-war"
+  },
+  "author": "Tadeu Zagallo <tadeuzagallo@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/gneutzling/hackathon-war/issues"
+  },
+  "homepage": "https://github.com/gneutzling/hackathon-war",
+  "dependencies": {
+    "body-parser": "^1.2.0",
+    "express": "^4.2.0",
+    "mongoose": "^3.8.9",
+    "morgan": "^1.0.1"
+  },
+  "devDependencies": {
+    "chai": "^1.9.1",
+    "factory-girl": "git://github.com/tadeuzagallo/factory_girl.git#dev",
+    "mocha": "^1.18.2",
+    "require-subvert": "0.0.3",
+    "sinon": "^1.9.1"
+  }
+}
