@@ -42,11 +42,11 @@ module.exports = function (grunt) {
 		// watch
 		watch: {
 			css: {
-				files: '<%= config.dev %>/vendor/sass/*.scss',
+				files: 'src/sass/*.scss',
 				tasks: ['sass:dev']
 			},
 			js: {
-				files: '<%= config.dev %>/vendor/js/**/*.js',
+				files: 'src/js/**/*.js',
 				tasks: ['uglify:dev']
 			}
 		}
