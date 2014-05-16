@@ -19,10 +19,10 @@ describe('State', function () {
     });
   });
 
-  it('should validate presence of long', function (done) {
+  it('should validate presence of lng', function (done) {
     new State().save(function (err) {
       catching(done, function () {
-        expect(err).to.have.deep.property('errors.long.message');
+        expect(err).to.have.deep.property('errors.lng.message');
       });
     });
   });
