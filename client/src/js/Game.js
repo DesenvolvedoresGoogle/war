@@ -18,6 +18,7 @@ WAR.module.Game = {
 		this.$pieces = $('#points');
 
 		this.details = {
+      btn: $('#details .btn'),
       table: $('#details table'),
 			attack: $('.details-attack'),
 			defense: $('.details-defense')
@@ -60,12 +61,6 @@ WAR.module.Game = {
 
 		WAR.instance.socket.on('play', function (marker) {
       console.log('play');
-      $('#details').find('.btn').one('click', function () {
-        _this.details.table.css('border-top-color', '#' + _this.enemy.pinColor);
-        google.maps.event.clearListeners(WAR.module.Map.map, 'click');
-        
-        WAR.instance.socket.emit('next', _this.data.id);
-      });
       _this.details.table.css('border-top-color', '#' + _this.player.pinColor);
 
 			_this.pieces = Math.floor(_this.player.states.length / 2);
@@ -130,6 +125,13 @@ WAR.module.Game = {
 				_this.pieces--;
 
 				if (!_this.pieces) {
+            _this.details.btn.removeClass('disabled').one('click', function () {
+            _this.details.table.css('border-top-color', '#' + _this.enemy.pinColor);
+            google.maps.event.clearListeners(WAR.module.Map.map, 'click');
+            
+            WAR.instance.socket.emit('next', _this.data.id);
+            _this.details.btn.addClass('disabled');
+          });
 					google.maps.event.clearListeners(WAR.module.Map.map, 'click');
 					_this.$pieces.parent().hide();
 					google.maps.event.addListener(WAR.module.Map.map, 'click', function (ev) {
