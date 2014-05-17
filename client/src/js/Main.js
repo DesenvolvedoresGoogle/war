@@ -39,11 +39,11 @@ var Game = function (options) {
 		    center: new google.maps.LatLng(-14.0634424, -50.2827613)
 		};
 
+  app.pinColors = ['FF0000', '00FF00'];
 	app.init = function () {
 		app.options = options;
 		app.setup();
 		app.bind();
-		//app.buildMarkers(app.options.players[0]);
 	};
 
 	app.setup = function () {
@@ -73,7 +73,7 @@ var Game = function (options) {
 				if (status == google.maps.GeocoderStatus.OVER_QUERY_LIMIT) {
 					console.log('OVER_QUERY_LIMIT');
 				}
-            });
+      });
 		});
 	};
 
@@ -98,37 +98,34 @@ var Game = function (options) {
 		return 'Unknown';
 	};
 
-	app.buildMarkers = function (player) {
-    if (!player) {
-      return;
-    }
+	app.buildMarkers = function () {
+    app.options.players.forEach(function (player, i) {
+      var current = null,
+        latLng = null,
+        pinImage = new google.maps.MarkerImage("http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|" + app.pinColors[i],
+          new google.maps.Size(21, 34),
+          new google.maps.Point(0,0),
+          new google.maps.Point(10, 34)
+        );
 
-		var current = null,
-			latLng = null,
-			pinColor = player.pinColor,
-			pinImage = new google.maps.MarkerImage("http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|" + pinColor,
-				new google.maps.Size(21, 34),
-				new google.maps.Point(0,0),
-				new google.maps.Point(10, 34)
-			);
+        player.states.forEach(function (state) {
+          latLng = new google.maps.LatLng(state.lat, state.lng);
+          current = new google.maps.Marker({
+            position: latLng,
+            map: app.map,
+            icon: pinImage
+          });
 
-		for (var i = 0, len = player.countries.length; i < len; i++) {
-			latLng = new google.maps.LatLng(player.countries[i].lat, player.countries[i].lng);
-			current = new google.maps.Marker({
-				position: latLng,
-				map: app.map,
-				icon: pinImage
-			});
-
-			app.markers.push(current);
-		}
+          state.markers = [current];
+        });
+    });
 	};
 
 	google.maps.event.addDomListener(window, 'load', app.init);
+  return app;
 };
 
-var StartScreen = function () {
-
+var StartScreen = function (game) {
 	var app = {},
 		socket = io.connect('http://localhost:3000');
 	
@@ -138,8 +135,10 @@ var StartScreen = function () {
 	};
 
 	app.setup = function () {
-		app.form = document.getElementById('form');
     app.$username = $('#username');
+    app.$startScreen = $('#start-screen').modal('show');
+
+		app.form = document.getElementById('form');
 		app.btnNewGame = document.getElementById('btn-new-game');
 		
 		socket.on('games', function (data) {
@@ -175,16 +174,20 @@ var StartScreen = function () {
 			arrayUsers.push(username);
 			arrayUsers.push(a);
 
+			console.log('join-game', arrayUsers);
 			socket.emit('join-game', arrayUsers);
 		});
 
 		socket.on('created-game', function (data) {
-			new Game()
+      console.log('created-game', data);
+      game.options = data;
+      game.buildMarkers();
+      app.$startScreen.modal('hide');
 		});
 	};
 
 	app.init();
 };
 
-new Game();
-new StartScreen();
+var game = new Game();
+new StartScreen(game);
