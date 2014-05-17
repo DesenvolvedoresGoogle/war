@@ -7,22 +7,24 @@ var State = require('./app/models/state');
 
 mongoose.connect('mongodb://localhost/hackathon-war-dev');
 
-var waiting = {};
-var games = [];
-var playing = {};
-var index = 0;
+var Shared = {
+  waiting: {},
+  games: [],
+  playing: {},
+  index: 0
+};
 
 io.set('log level', 1);
 io.on('connection', function(socket){
-  socket.emit('games', Object.keys(waiting));
+  socket.emit('games', Object.keys(Shared.waiting));
 
   function update() {
-    socket.broadcast.emit('games', Object.keys(waiting));
+    socket.broadcast.emit('games', Object.keys(Shared.waiting));
   }
 
   socket.on('new-game', function (player) {
     if (player) {
-      waiting[player] = socket;
+      Shared.waiting[player] = socket;
       socket.player = player;
       update();
     }
@@ -30,23 +32,23 @@ io.on('connection', function(socket){
 
   socket.on('disconnect', function () {
     if (socket.player) {
-      if (waiting[socket.player]) {
-        delete waiting[socket.player];
-      } else if (playing[socket.player]) {
-        var gameId = playing[socket.player].gameId;
-        var game = games[gameId];
+      if (Shared.waiting[socket.player]) {
+        delete Shared.waiting[socket.player];
+      } else if (Shared.playing[socket.player]) {
+        var gameId = Shared.playing[socket.player].gameId;
+        var game = Shared.games[gameId];
 
         Object.keys(game.players).filter(function (p) {
           return p !== socket.player;
         }).forEach(function (username) {
-          playing[username].emit('win-wo');
+          Shared.playing[username].emit('win-wo');
         });
         
         Object.keys(game.players).forEach(function (p) {
-          delete playing[p];
+          delete Shared.playing[p];
         });
 
-        delete games[gameId];
+        delete Shared.games[gameId];
       }
       update();
     }
@@ -60,9 +62,9 @@ io.on('connection', function(socket){
           states: states.splice(0, 13),
         };
 
-        playing[username] = waiting[username] || socket;
-        playing[username].player = username;
-        delete waiting[username];
+        Shared.playing[username] = Shared.waiting[username] || socket;
+        Shared.playing[username].player = username;
+        delete Shared.waiting[username];
 
         obj[username] = player;
 
@@ -70,15 +72,15 @@ io.on('connection', function(socket){
       }, {});
 
       var game = {
-        id: games.length,
+        id: Shared.games.length,
         players: players
       };
 
-      games.push(game);
+      Shared.games.push(game);
 
       Object.keys(game.players).forEach(function (username) {
-        playing[username].gameId = game.id;
-        playing[username].emit('created-game', game);
+        Shared.playing[username].gameId = game.id;
+        Shared.playing[username].emit('created-game', game);
       });
 
       next(game.id);
@@ -86,29 +88,30 @@ io.on('connection', function(socket){
   });
 
   socket.on('add-marker', function (marker) {
-    var game = games[marker.gameId];
+    var game = Shared.games[marker.gameId];
     for (var username in game.players) {
-      playing[username].emit('add-marker', marker);
+      Shared.playing[username].emit('add-marker', marker);
     }
   });
 
   socket.on('remove-markers', function (target) {
-    var game = games[target.gameId];
+    var game = Shared.games[target.gameId];
     for (var username in game.players) {
-      playing[username].emit('remove-markers', target);
+      Shared.playing[username].emit('remove-markers', target);
     }
   });
 
   socket.on('change-state-owner', function (data) {
-    var game = games[data.gameId];
+    var game = Shared.games[data.gameId];
     for (var username in game.players) {
-      playing[username].emit('remove-markers', data);
+      Shared.playing[username].emit('remove-markers', data);
     }
   });
 
   function next(gameId) {
-    var username = Object.keys(games[gameId].players)[index++ % 2];
-    playing[username].emit('play');
+    var username = Object.keys(Shared.games[gameId].players)[Shared.index];
+    Shared.index = Shared.index++ % 2;
+    Shared.playing[username].emit('play');
   }
   socket.on('next', next);
 });
