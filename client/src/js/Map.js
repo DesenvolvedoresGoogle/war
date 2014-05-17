@@ -60,5 +60,40 @@ WAR.module.Map = {
 			map: this.map,
 			icon: pinImage
 		});
+	},
+
+	getCountry: function (ev, callback) {
+		this.geocoder.geocode({
+			'latLng': ev.latLng
+		}, function(results, status) {
+			if (status === google.maps.GeocoderStatus.OK) {
+				var geocoderAddressComponent, addressComponentTypes, address;
+
+				for (var i in results) {
+					geocoderAddressComponent = results[i].address_components;
+
+					for (var j in geocoderAddressComponent) {
+						address = geocoderAddressComponent[j];
+						addressComponentTypes = geocoderAddressComponent[j].types;
+
+						for (var k in addressComponentTypes) {
+							if (addressComponentTypes[k] == 'administrative_area_level_1') {
+								if (address.short_name === 'DF') {
+									address = {
+										long_name: 'Goiás',
+										short_name: 'GO'
+									};
+								}
+
+								return callback(address);
+							}
+						}
+					}
+				}
+
+				callback('Unknown');
+			}
+		});
 	}
+
 };

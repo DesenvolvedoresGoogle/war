@@ -26,39 +26,39 @@ WAR.module.Menu = {
 		});
 
 		$(document).on('click', '.btn-enter-game', function () {
-			_this.joinGame();
+			_this.joinGame($(this));
 		});
 
 		WAR.instance.socket.on('created-game', function (data) {
-			WAR.instance.game = WAR.module.Game.init(data);
+			WAR.module.Game.init(data);
 		});
 	},
 
-	joinGame: function () {
-		var nameValue = this.$username.val();
+	joinGame: function (target) {
+		WAR.username = this.$username.val();
 
-		if (!nameValue) {
+		if (!WAR.username) {
 	        alert('Preencha o seu nome antes de criar um jogo');
 	        return;	
 		}
 
-		var owner = $(this).parent().prev().html(),
-			arrayUsers = [owner, nameValue];
+		var owner = target.parent().prev().html(),
+			arrayUsers = [owner, WAR.username];
 
 		this.$username.val('');
 		WAR.instance.socket.emit('join-game', arrayUsers);
 	},
 
 	waitingList: function () {
-		var nameValue = this.$username.val();
+		WAR.username = this.$username.val();
 
-		if (!nameValue) {
+		if (!WAR.username) {
 	        alert('Preencha o seu nome antes de criar um jogo');
 	        return;	
 		}
 
 		this.$username.val('');
-		WAR.instance.socket.emit('new-game', nameValue);
+		WAR.instance.socket.emit('new-game', WAR.username);
 
 		this.$modal.find('.modal-body')
 			.html('<p class="text-center">Aguardando outro jogador...</p>')
