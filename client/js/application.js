@@ -235,7 +235,11 @@ WAR.module.Game = {
         });
         this.pieces = null;
         WAR.instance.socket.on("play", function(marker) {
-            // console.log('play');
+            console.log("play");
+            $("#details").find(".btn").one("click", function() {
+                google.maps.event.clearListeners(WAR.module.Map.map, "click");
+                WAR.instance.socket.emit("next", _this.data.id);
+            });
             _this.pieces = Math.floor(_this.player.states.length / 2);
             _this.$pieces.html(_this.pieces).parent().show();
             google.maps.event.addListener(WAR.module.Map.map, "click", function(ev) {
@@ -272,9 +276,6 @@ WAR.module.Game = {
     play: function(ev) {
         var _this = this;
         this._state = null;
-        $("#details").find(".btn").one("click", function() {
-            WAR.instance.socket.emit("next", _this.data.id);
-        });
         WAR.module.Map.getCountry(ev, function(stateSelected) {
             var contains = _this.player.states.filter(function(s) {
                 return s.acronym === stateSelected.short_name;
