@@ -1,7 +1,5 @@
 'use strict';
 
-
-
 var possibilities = {
 	AC: ['AM', 'RO'],
 	AM: ['AC', 'RO', 'RR', 'PA', 'MT'],

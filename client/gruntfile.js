@@ -33,8 +33,10 @@ module.exports = function (grunt) {
 				},
 				files: {
 					'js/application.js': [
-						'src/js/zepto.js',
-						'src/js/Main.js'
+						'src/js/Start.js',
+						'src/js/Map.js',
+						'src/js/Menu.js',
+						'src/js/Game.js'
 					]
 				}
 			}
