@@ -204,9 +204,9 @@ var StartScreen = function (game) {
       game.buildMarkers();
       app.$startScreen.modal('hide');
       
-      app.player = data.players.find(function (p) {
+      app.player = data.players.filter(function (p) {
         return p.username === app.username;
-      });
+      })[0];
 
       $('#menu')
         .find('#user-color').css('background-color', '#' + app.player.pinColor)
@@ -253,11 +253,11 @@ var StartScreen = function (game) {
             };
           }
 
-          var contains = app.player.states.find(function (s) {
+          var contains = app.player.states.filter(function (s) {
             return s.acronym === stateSelected.short_name;
           });
 
-          if (contains) {
+          if (contains.length) {
             socket.emit('add-marker', {
               gameId: game.options.id,
               lat: ev.latLng.lat(),
