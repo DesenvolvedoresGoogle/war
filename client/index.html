@@ -1,16 +1,16 @@
 <!doctype html>
 <html lang="en">
 <head>
-	<title>Hackathon War</title>
-	<meta charset="UTF-8">
+  <title>Hackathon War</title>
+  <meta charset="UTF-8">
   <link href='http://fonts.googleapis.com/css?family=Gravitas+One' rel='stylesheet' type='text/css'>
   <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
-	<link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
   <div id="waiting">
   </div>
-	<div id="start-screen" class="modal fade in" role="dialog" data-backdrop="static">
+  <div id="start-screen" class="modal fade in" role="dialog" data-backdrop="static">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
@@ -36,9 +36,9 @@
         </div>
       </div>
     </div>
-	</div>
+  </div>
 
-	<div id="game"></div>
+  <div id="game"></div>
 
   <div id="menu" class="navbar navbar-default navbar-fixed-top">
     <div class="container">
@@ -58,11 +58,14 @@
     </div>
   </div>
 
-	<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
-	<script src="http://localhost:3000/socket.io/socket.io.js"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
+  <script src="http://localhost:3000/socket.io/socket.io.js"></script>
   <script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
   <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
   <script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.min.js"></script>
-	<script src="js/application.js"></script>
+  <script src="src/js/Start.js"></script>
+  <script src="src/js/Map.js"></script>
+  <script src="src/js/Menu.js"></script>
+  <script src="src/js/Game.js"></script>
 </body>
 </html>

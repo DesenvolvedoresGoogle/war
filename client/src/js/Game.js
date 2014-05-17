@@ -23,7 +23,7 @@ WAR.module.Game = {
 
 		WAR.instance.socket.on('win-wo', function () {
 			console.log('win-wo');
-			app.$startScreen.find('.modal-body')
+			_this.$modal.find('.modal-body')
 				.html('<h2>Você ganhou!</h2><p>Seu oponente desistiu do jogo...</p>')
 				.next()
 				.html('<button class="btn btn-primary" onclick="window.location.reload()">OK</button>');
@@ -35,7 +35,7 @@ WAR.module.Game = {
 			console.log('add-marker: marker = ', marker);
 			var state = marker.state;
 
-			WAR.module.Map.addMarker(marker.lat, marker.lng, marker.color);
+			marker = WAR.module.Map.addMarker(marker.lat, marker.lng, marker.color);
 
 			_.each(_this.data.players, function (p) {
 				var s = p.states.filter(function (s) {
@@ -70,6 +70,7 @@ WAR.module.Game = {
 				return a || b;
 			});
 
+      console.log(from);
 			for (var i = 0; i < obj.count; i++) {
 				from.markers[0].setMap(null);
 				from.markers.splice(i, 1);
@@ -86,6 +87,8 @@ WAR.module.Game = {
 
 	play: function (ev) {
 		var _this = this;
+
+    this._state = null;
 
 		WAR.module.Map.getCountry(ev, function (stateSelected) {
 			var contains = _this.player.states.filter(function (s) {
@@ -164,8 +167,7 @@ WAR.module.Game = {
 	attackHandler: function (ev) {
 		console.log('attackHandler');
 
-		var _this = this,
-			_state = 0;
+		var _this = this;
 
 
 		WAR.module.Map.getCountry(ev, function (state) {
@@ -173,14 +175,14 @@ WAR.module.Game = {
 				return s.acronym === state.short_name;
 			});
 
-			if (!_state) {
+			if (!_this._state) {
 				if (contains.length) {
-					_state = contains[0];
+					_this._state = contains[0];
 				}
 			}
 			else {
-				var attack = _state;
-				_state = null;
+				var attack = _this._state;
+				_this._state = null;
 
 				if (!contains.length) {
 					if (!~possibilities[attack.acronym].indexOf(state.short_name)) {
@@ -257,10 +259,10 @@ WAR.module.Game = {
 
 					if (defenseLost === defenseCount) {
 						WAR.instance.socket.emit('change-state-owner', {
-							gameId: this._data.id,
+							gameId: _this.data.id,
 							state: defense.acronym,
-							from: app.enemy.username,
-							to: app.player.username
+							from: _this.enemy.username,
+							to: _this.player.username
 						});
 
 						var move = function (lat, lng) {
@@ -289,7 +291,7 @@ WAR.module.Game = {
 								return alert('Você não tem mais exércitos para mover');
 							}
 
-							_this.getCountry(e, function (state) {
+							WAR.module.Map.getCountry(e, function (state) {
 								if (state.short_name === defense.acronym) {
 									move(e.latLng.lat(), e.latLng.lng());
 								}
