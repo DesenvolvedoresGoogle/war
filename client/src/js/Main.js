@@ -61,21 +61,6 @@ var Game = function (options) {
 	};
 
 	app.bind = function () {
-		google.maps.event.addListener(app.map, 'click', function (ev) {
-			app.geocoder.geocode({
-				'latLng': ev.latLng
-			}, function(results, status) {
-				if (status == google.maps.GeocoderStatus.OK) {
-					var stateSelected = app.getCountry(results);
-				}
-				if (status == google.maps.GeocoderStatus.ZERO_RESULTS) {
-					console.log('ZERO_RESULTS');
-				}
-				if (status == google.maps.GeocoderStatus.OVER_QUERY_LIMIT) {
-					console.log('OVER_QUERY_LIMIT');
-				}
-      });
-		});
 
     // bounds of the desired area
     var allowedBounds = new google.maps.LatLngBounds(
@@ -115,28 +100,29 @@ var Game = function (options) {
 		return 'Unknown';
 	};
 
+  app.addMarker = function (lat, lng, pinColor) {
+    var pinImage = new google.maps.MarkerImage('http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|' + pinColor,
+      new google.maps.Size(21, 34),
+      new google.maps.Point(0,0),
+      new google.maps.Point(10, 34)
+        );
+    var latLng = new google.maps.LatLng(lat, lng);
+    var marker = new google.maps.Marker({
+      position: latLng,
+      map: app.map,
+      icon: pinImage
+    });
+
+  };
 	app.buildMarkers = function () {
     app.options.players.forEach(function (player, i) {
       player.pinColor = app.pinColors[i];
 
-      var current = null,
-        latLng = null,
-        pinImage = new google.maps.MarkerImage("http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|" + player.pinColor,
-          new google.maps.Size(21, 34),
-          new google.maps.Point(0,0),
-          new google.maps.Point(10, 34)
-        );
-
-        player.states.forEach(function (state) {
-          latLng = new google.maps.LatLng(state.lat, state.lng);
-          current = new google.maps.Marker({
-            position: latLng,
-            map: app.map,
-            icon: pinImage
-          });
-
-          state.markers = [current];
-        });
+      player.states.forEach(function (state) {
+        var marker = app.addMarker(state.lat, state.lng, player.pinColor);
+        state.markers = state.markers || [];
+        state.markers.push(marker);
+      });
     });
 	};
 
@@ -154,6 +140,7 @@ var StartScreen = function (game) {
 	};
 
 	app.setup = function () {
+    app.$pieces = $('#points');
     app.$username = $('#username');
     app.$startScreen = $('#start-screen').modal('show');
 
@@ -238,15 +225,57 @@ var StartScreen = function (game) {
       app.$startScreen.modal('show');
     });
 
-    socket.on('play', function () {
-      Math.floor(app.player.states.length);
-
-      console.log(app.username + '\'s turn');
-
-      setTimeout(function () {
-        socket.emit('next', game.options.id);
-      }, 1000);
+    socket.on('add-marker', function (marker) {
+      game.addMarker(marker.lat, marker.lng, marker.color);
     });
+
+    var pieces; 
+
+    socket.on('play', function () {
+      console.log('play');
+      pieces = Math.floor(app.player.states.length/ 2);
+      app.$pieces.html(pieces).parent().show();
+      google.maps.event.addListener(game.map, 'click', play);
+    });
+
+    function play (ev) {
+      game.geocoder.geocode({
+        'latLng': ev.latLng
+      }, function(results, status) {
+        if (status === google.maps.GeocoderStatus.OK) {
+          var stateSelected = game.getCountry(results);
+          if (stateSelected.short_name === 'DF') {
+            stateSelected = {
+              long_name: 'Goiás',
+              short_name: 'GO'
+            };
+          }
+
+          var contains = app.player.states.find(function (s) {
+            return s.acronym === stateSelected.short_name;
+          });
+
+          if (contains) {
+            socket.emit('add-marker', {
+              gameId: game.options.id,
+              lat: ev.latLng.lat(),
+              lng: ev.latLng.lng(),
+              color: app.player.pinColor
+            });
+
+            pieces--;
+
+            if (!pieces) {
+              google.maps.event.clearListeners(game.map, 'click');
+              app.$pieces.parent().hide();
+              alert('atacar!');
+            } else {
+              app.$pieces.html(pieces);
+            }
+          }
+        }
+      });
+    }
 	};
 
 	app.init();

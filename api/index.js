@@ -74,15 +74,24 @@ io.on('connection', function(socket){
       game.players.forEach(function (player) {
         playing[player.username].gameId = game.id;
         playing[player.username].emit('created-game', game);
-        playing[player.username].emit('play', players[index++ % 2].username);
       });
 
+      next(game.id);
     });
   });
 
-  socket.on('next', function (gameId) {
+  socket.on('add-marker', function (marker) {
+    var game = games[marker.gameId];
+    console.log(game, marker.gameId, games);
+    game.players.forEach(function (player) {
+      playing[player.username].emit('add-marker', marker);
+    });
+  });
+
+  function next(gameId) {
     var player = games[gameId].players[index++ % 2];
     console.log(player.username);
     playing[player.username].emit('play');
-  });
+  }
+  socket.on('next', next);
 });

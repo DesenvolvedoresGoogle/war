@@ -38,3 +38,12 @@ table tr td:last-child {
   padding-top: 3px;
   display: none;
 }
+
+#user-profile > * {
+  float: left;
+}
+
+#army {
+  display: none;
+  margin-left: 50px;
+}
