@@ -70,7 +70,6 @@ WAR.module.Game = {
 				return a || b;
 			});
 
-      console.log(from);
 			for (var i = 0; i < obj.count; i++) {
 				from.markers[0].setMap(null);
 				from.markers.splice(i, 1);
@@ -78,9 +77,17 @@ WAR.module.Game = {
 		});
 
 		WAR.instance.socket.on('change-state-owner', function (data) {
-			var state = _this.data.players[data.from].states.splice(
-						_this.data.players[data.from].states.indexOf(state),1);
-		
+      var players = _this.data.players;
+      var from = players[data.from];
+      var state, index, length = from.states.length;
+      for (index = 0; index < length; index++) {
+        state = from.states[index];
+        if (state.acronym === data.state) {
+          break;
+        }
+      }
+
+			from.states.splice(index, 1);
 			_this.data.players[data.to].states.push(state);
 		});
 	},
@@ -188,6 +195,7 @@ WAR.module.Game = {
 					if (!~possibilities[attack.acronym].indexOf(state.short_name)) {
 						return alert('Só é possível atacar estados que fazem fronteira');
 					}
+          console.log(attack.markers.length, attack, attack.markers);
 					
 					var number = parseInt(prompt('Com quantos exércitos você deseja atacar?'), 10),
 						attackCount = (attack.markers || []).length - 1;
@@ -277,7 +285,7 @@ WAR.module.Game = {
 								lat: lat,
 								lng: lng,
 								color: _this.player.pinColor,
-								state: defense.short_name
+								state: defense.acronym
 							});
 						};
 
