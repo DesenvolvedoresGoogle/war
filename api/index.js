@@ -10,6 +10,7 @@ mongoose.connect('mongodb://localhost/hackathon-war-dev');
 var waiting = {};
 var games = [];
 var playing = {};
+var index = 0;
 
 io.set('log level', 1);
 io.on('connection', function(socket){
@@ -73,7 +74,15 @@ io.on('connection', function(socket){
       game.players.forEach(function (player) {
         playing[player.username].gameId = game.id;
         playing[player.username].emit('created-game', game);
+        playing[player.username].emit('play', players[index++ % 2].username);
       });
+
     });
+  });
+
+  socket.on('next', function (gameId) {
+    var player = games[gameId].players[index++ % 2];
+    console.log(player.username);
+    playing[player.username].emit('play');
   });
 });

@@ -164,12 +164,19 @@ var StartScreen = function(game) {
             app.player = data.players.find(function(p) {
                 return p.username === app.username;
             });
-            $("#menu").find("#user-color").css("background-color", "#" + app.player.pinColor).end().find("#user-name").html(app.username).end().find("#user-stats").html(app.player.states.length + " estados").end().show();
+            $("#menu").find("#user-color").css("background-color", "#" + app.player.pinColor).end().find("#user-name").html(app.username).end().find("#user-stats").html(app.player.states.length + "/26 estados").end().show();
         });
         socket.on("win-wo", function() {
             console.log("win-wo");
             app.$startScreen.find(".modal-body").html("<h2>Você ganhou!</h2><p>Seu oponente desistiu do jogo...</p>").next().html('<button class="btn btn-primary" onclick="window.location.reload()">OK</button>');
             app.$startScreen.modal("show");
+        });
+        socket.on("play", function() {
+            Math.floor(app.player.states.length);
+            console.log(app.username + "'s turn");
+            setTimeout(function() {
+                socket.emit("next", game.options.id);
+            }, 1e3);
         });
     };
     app.init();

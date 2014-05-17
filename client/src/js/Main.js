@@ -224,7 +224,7 @@ var StartScreen = function (game) {
         .end()
         .find('#user-name').html(app.username)
         .end()
-        .find('#user-stats').html(app.player.states.length + ' estados')
+        .find('#user-stats').html(app.player.states.length + '/26 estados')
         .end()
         .show();
 		});
@@ -236,6 +236,16 @@ var StartScreen = function (game) {
         .next()
         .html('<button class="btn btn-primary" onclick="window.location.reload()">OK</button>');
       app.$startScreen.modal('show');
+    });
+
+    socket.on('play', function () {
+      Math.floor(app.player.states.length);
+
+      console.log(app.username + '\'s turn');
+
+      setTimeout(function () {
+        socket.emit('next', game.options.id);
+      }, 1000);
     });
 	};
 
