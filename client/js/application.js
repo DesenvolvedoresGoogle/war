@@ -98,7 +98,8 @@ var Game = function(options) {
     };
     app.buildMarkers = function() {
         app.options.players.forEach(function(player, i) {
-            var current = null, latLng = null, pinImage = new google.maps.MarkerImage("http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|" + app.pinColors[i], new google.maps.Size(21, 34), new google.maps.Point(0, 0), new google.maps.Point(10, 34));
+            player.pinColor = app.pinColors[i];
+            var current = null, latLng = null, pinImage = new google.maps.MarkerImage("http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|" + player.pinColor, new google.maps.Size(21, 34), new google.maps.Point(0, 0), new google.maps.Point(10, 34));
             player.states.forEach(function(state) {
                 latLng = new google.maps.LatLng(state.lat, state.lng);
                 current = new google.maps.Marker({
@@ -135,24 +136,23 @@ var StartScreen = function(game) {
     };
     app.bind = function() {
         app.btnNewGame.addEventListener("click", function(ev) {
-            var username = app.$username.val();
-            if (!username) {
+            app.username = app.$username.val();
+            if (!app.username) {
                 alert("Preencha o seu nome antes de criar um jogo");
                 return;
             }
-            console.log("new-game", username);
-            socket.emit("new-game", username);
+            console.log("new-game", app.username);
+            socket.emit("new-game", app.username);
             app.$startScreen.find(".modal-body").html('<p class="text-center">Aguardando outro jogador...</p>').next().empty();
         });
         $(document).on("click", ".btn-enter-game", function() {
-            var username = app.$username.val(), arrayUsers = [];
-            if (!username) {
+            app.username = app.$username.val();
+            if (!app.username) {
                 alert("Preencha o seu nome antes de entrar no jogo");
                 return;
             }
-            var a = $(this).parent().prev().html();
-            arrayUsers.push(username);
-            arrayUsers.push(a);
+            var owner = $(this).parent().prev().html();
+            var arrayUsers = [ owner, app.username ];
             console.log("join-game", arrayUsers);
             socket.emit("join-game", arrayUsers);
         });
@@ -161,6 +161,10 @@ var StartScreen = function(game) {
             game.options = data;
             game.buildMarkers();
             app.$startScreen.modal("hide");
+            app.player = data.players.find(function(p) {
+                return p.username === app.username;
+            });
+            $("#menu").find("#user-color").css("background-color", "#" + app.player.pinColor).end().find("#user-name").html(app.username).end().find("#user-stats").html(app.player.states.length + " estados").end().show();
         });
         socket.on("win-wo", function() {
             console.log("win-wo");

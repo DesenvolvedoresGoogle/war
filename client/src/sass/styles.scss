@@ -24,3 +24,17 @@ table tr td:last-child {
 #start-screen {
 	font-size: 1.4em;
 }
+
+#user-color {
+  float: left;
+  width: 20px;
+  height: 20px;
+  margin: 0 10px;
+}
+
+#menu {
+  height: 27px;
+  min-height: 27px;
+  padding-top: 3px;
+  display: none;
+}
