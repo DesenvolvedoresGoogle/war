@@ -65,21 +65,33 @@ var Game = function(options) {
             app.map.panTo(lastValidCenter);
         });
     };
-    app.getCountry = function(results) {
-        var geocoderAddressComponent, addressComponentTypes, address;
-        for (var i in results) {
-            geocoderAddressComponent = results[i].address_components;
-            for (var j in geocoderAddressComponent) {
-                address = geocoderAddressComponent[j];
-                addressComponentTypes = geocoderAddressComponent[j].types;
-                for (var k in addressComponentTypes) {
-                    if (addressComponentTypes[k] == "administrative_area_level_1") {
-                        return address;
+    app.getCountry = function(ev, callback) {
+        game.geocoder.geocode({
+            latLng: ev.latLng
+        }, function(results, status) {
+            if (status === google.maps.GeocoderStatus.OK) {
+                var geocoderAddressComponent, addressComponentTypes, address;
+                for (var i in results) {
+                    geocoderAddressComponent = results[i].address_components;
+                    for (var j in geocoderAddressComponent) {
+                        address = geocoderAddressComponent[j];
+                        addressComponentTypes = geocoderAddressComponent[j].types;
+                        for (var k in addressComponentTypes) {
+                            if (addressComponentTypes[k] == "administrative_area_level_1") {
+                                if (address.short_name === "DF") {
+                                    address = {
+                                        long_name: "Goiás",
+                                        short_name: "GO"
+                                    };
+                                }
+                                return callback(address);
+                            }
+                        }
                     }
                 }
+                callback("Unknown");
             }
-        }
-        return "Unknown";
+        });
     };
     app.addMarker = function(lat, lng, pinColor) {
         var pinImage = new google.maps.MarkerImage("http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|" + pinColor, new google.maps.Size(21, 34), new google.maps.Point(0, 0), new google.maps.Point(10, 34));
@@ -89,6 +101,7 @@ var Game = function(options) {
             map: app.map,
             icon: pinImage
         });
+        return marker;
     };
     app.buildMarkers = function() {
         app.options.players.forEach(function(player, i) {
@@ -152,9 +165,13 @@ var StartScreen = function(game) {
             game.options = data;
             game.buildMarkers();
             app.$startScreen.modal("hide");
-            app.player = data.players.filter(function(p) {
-                return p.username === app.username;
-            })[0];
+            if (data.players[0].username === app.username) {
+                app.player = data.players[0];
+                app.enemy = data.players[1];
+            } else {
+                app.player = data.players[1];
+                app.enemy = data.players[0];
+            }
             $("#menu").find("#user-color").css("background-color", "#" + app.player.pinColor).end().find("#user-name").html(app.username).end().find("#user-stats").html(app.player.states.length + "/26 estados").end().show();
         });
         socket.on("win-wo", function() {
@@ -163,7 +180,19 @@ var StartScreen = function(game) {
             app.$startScreen.modal("show");
         });
         socket.on("add-marker", function(marker) {
-            game.addMarker(marker.lat, marker.lng, marker.color);
+            console.log("add-marker: marker = ", marker);
+            var state = marker.state;
+            marker = game.addMarker(marker.lat, marker.lng, marker.color);
+            game.options.players.forEach(function(p) {
+                var s = p.states.filter(function(s) {
+                    return s.acronym === state;
+                });
+                if (s.length) {
+                    console.log("add-marker: found state", s[0]);
+                    s[0].markers = s[0].markers || [];
+                    s[0].markers.push(marker);
+                }
+            });
         });
         var pieces;
         socket.on("play", function() {
@@ -173,35 +202,126 @@ var StartScreen = function(game) {
             google.maps.event.addListener(game.map, "click", play);
         });
         function play(ev) {
-            game.geocoder.geocode({
-                latLng: ev.latLng
-            }, function(results, status) {
-                if (status === google.maps.GeocoderStatus.OK) {
-                    var stateSelected = game.getCountry(results);
-                    if (stateSelected.short_name === "DF") {
-                        stateSelected = {
-                            long_name: "Goiás",
-                            short_name: "GO"
-                        };
-                    }
-                    var contains = app.player.states.filter(function(s) {
-                        return s.acronym === stateSelected.short_name;
+            game.getCountry(ev, function(stateSelected) {
+                var contains = app.player.states.filter(function(s) {
+                    return s.acronym === stateSelected.short_name;
+                });
+                if (contains.length) {
+                    console.log(stateSelected.short_name);
+                    socket.emit("add-marker", {
+                        gameId: game.options.id,
+                        lat: ev.latLng.lat(),
+                        lng: ev.latLng.lng(),
+                        color: app.player.pinColor,
+                        state: stateSelected.short_name
                     });
+                    pieces--;
+                    if (!pieces) {
+                        google.maps.event.clearListeners(game.map, "click");
+                        app.$pieces.parent().hide();
+                        google.maps.event.addListener(game.map, "click", attackHandler);
+                    } else {
+                        app.$pieces.html(pieces);
+                    }
+                }
+            });
+        }
+        var _state = 0;
+        function attackHandler(event) {
+            game.getCountry(event, function(state) {
+                var contains = app.player.states.filter(function(s) {
+                    return s.acronym === state.short_name;
+                });
+                if (!_state) {
                     if (contains.length) {
-                        socket.emit("add-marker", {
-                            gameId: game.options.id,
-                            lat: ev.latLng.lat(),
-                            lng: ev.latLng.lng(),
-                            color: app.player.pinColor
-                        });
-                        pieces--;
-                        if (!pieces) {
-                            google.maps.event.clearListeners(game.map, "click");
-                            app.$pieces.parent().hide();
-                            socket.emit("next", game.options.id);
-                        } else {
-                            app.$pieces.html(pieces);
+                        _state = contains[0];
+                    }
+                } else {
+                    var attack = _state;
+                    _state = null;
+                    if (!contains.length) {
+                        var number = parseInt(prompt("Com quantos exércitos você deseja atacar?"));
+                        var attackCount = (attack.markers || []).length - 1;
+                        if (number < 1 || number > 3) {
+                            return alert("Você só pode atacar com 1 a 3 exércitos");
+                        } else if (number > attackCount) {
+                            return alert("Você só tem " + attackCount + " exércitos disponíveis para atacar");
                         }
+                        attackCount = number;
+                        var defense = app.enemy.states.filter(function(enemyState) {
+                            return enemyState.acronym === state.short_name;
+                        })[0];
+                        console.log("defense:", defense.markers.length, defense.markers);
+                        var defenseCount = Math.min((defense.markers || []).length, attackCount);
+                        var attackRandoms = [];
+                        var defenseRandoms = [];
+                        var i;
+                        var random = function(n, container) {
+                            for (i = 0; i < n; i++) {
+                                container.push(1 + Math.floor(Math.random() * 6));
+                            }
+                            console.log(container);
+                        };
+                        random(attackCount, attackRandoms);
+                        random(defenseCount, defenseRandoms);
+                        attackRandoms = attackRandoms.sort(function(a, b) {
+                            return b - a;
+                        });
+                        defenseRandoms = defenseRandoms.sort(function(a, b) {
+                            return b - a;
+                        });
+                        console.log("attack", attackRandoms);
+                        console.log("defense", defenseRandoms);
+                        var defenseLost = 0;
+                        var attackLost = 0;
+                        for (i = 0; i < Math.min(defenseCount, attackCount); i++) {
+                            if (attackRandoms[i] > defenseRandoms[i]) {
+                                defenseLost++;
+                            } else {
+                                attackLost++;
+                            }
+                        }
+                        defenseCount = (defense.markers || []).length;
+                        console.log("attack lost", attackLost);
+                        console.log("defense lost", defenseLost);
+                        console.log("defense count", defenseCount);
+                        var remove = function(from, count) {
+                            for (i = 0; i < count; i++) {
+                                from.markers[0].setMap(null);
+                                from.markers.splice(i, 1);
+                            }
+                        };
+                        remove(defense, defenseLost);
+                        remove(attack, attackLost);
+                        if (defenseLost === defenseCount) {
+                            app.enemy.states.splice(app.enemy.states.indexOf(defense), 1);
+                            app.player.states.push(defense);
+                            var move = function(lat, lng) {
+                                attack.markers[0].setMap(null);
+                                attack.markers.splice(0, 1);
+                                var marker = game.addMarker(lat, lng, app.player.pinColor);
+                                defense.markers.push(marker);
+                            };
+                            move(defense.lat, defense.lng);
+                            alert("Clique no novo território para mover mais exércitos");
+                            google.maps.event.clearListeners(game.map, "click");
+                            google.maps.event.addListener(game.map, "click", function(e) {
+                                if (attack.markers.length === 1) {
+                                    return alert("Você não tem mais exércitos para mover");
+                                }
+                                game.getCountry(e, function(state) {
+                                    if (state.short_name === defense.acronym) {
+                                        move(e.latLng.lat(), e.latLng.lng());
+                                    }
+                                });
+                            });
+                            window.done = function() {
+                                google.maps.event.clearListeners(game.map, "click");
+                                google.maps.event.addListener(game.map, "click", attackHandler);
+                            };
+                        }
+                    } else {
+                        alert("Você não pode atacar o seu próprio estado.");
                     }
                 }
             });
