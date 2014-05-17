@@ -65,11 +65,19 @@ table tr td:last-child {
 }
 @media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/tadeu\/www\/js\/hackathon-war\/client\/src\/sass\/styles\.scss}line{font-family:\0000361}}
 #details .table {
-  margin-bottom: 0;
+  margin-bottom: 9px;
+  border-bottom: 1px solid #CCC;
   border-top: 2px solid black;
 }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/tadeu\/www\/js\/hackathon-war\/client\/src\/sass\/styles\.scss}line{font-family:\0000366}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/tadeu\/www\/js\/hackathon-war\/client\/src\/sass\/styles\.scss}line{font-family:\0000367}}
+#details .row {
+  text-align: center;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/tadeu\/www\/js\/hackathon-war\/client\/src\/sass\/styles\.scss}line{font-family:\0000371}}
 #details .btn {
-  display: block;
-  margin: 0 auto;
+  width: 200px;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/tadeu\/www\/js\/hackathon-war\/client\/src\/sass\/styles\.scss}line{font-family:\0000375}}
+#details .next-attack {
+  display: none;
 }

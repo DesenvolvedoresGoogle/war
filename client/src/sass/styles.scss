@@ -59,13 +59,21 @@ table tr td:last-child {
   left: 0;
 
   .table {
-    margin-bottom: 0;
+    margin-bottom: 9px;
+    border-bottom: 1px solid #CCC;
     border-top: 2px solid black;
   }
 
+  .row {
+    text-align: center;
+  }
+
   .btn {
-    display: block;
-    margin: 0 auto;
+    width: 200px;
+  }
+
+  .next-attack {
+    display: none;
   }
 }
 

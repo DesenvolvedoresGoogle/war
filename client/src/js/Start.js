@@ -37,5 +37,5 @@ var WAR = {
 $(document).ready(function () {
 	WAR.instance.socket = io.connect('http://localhost:3000');
 	WAR.module.Map.init();
-	WAR.module.Menu.init();
+  WAR.module.Menu.init();
 });

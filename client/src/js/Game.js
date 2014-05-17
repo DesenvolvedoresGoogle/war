@@ -18,7 +18,18 @@ WAR.module.Game = {
 		this.$pieces = $('#points');
 
 		this.details = {
-      btn: $('#details .btn'),
+      clear: function () {
+        this.nextAttack.show();
+        this.endAttack.hide();
+        this.attack.empty();
+        this.defense.empty();
+        this.attackDice.empty();
+        this.defenseDice.empty();
+      },
+      nextAttack: $('#details .next-attack'),
+      endAttack: $('#details .end-attack'),
+      attackDice: $('#details .attack-dice'),
+      defenseDice: $('#details .defense-dice'),
       table: $('#details table'),
 			attack: $('.details-attack'),
 			defense: $('.details-defense')
@@ -125,12 +136,13 @@ WAR.module.Game = {
 				_this.pieces--;
 
 				if (!_this.pieces) {
-            _this.details.btn.removeClass('disabled').one('click', function () {
+          _this.details.endAttack.removeClass('disabled').one('click', function () {
+            _this.details.clear();
             _this.details.table.css('border-top-color', '#' + _this.enemy.pinColor);
             google.maps.event.clearListeners(WAR.module.Map.map, 'click');
             
             WAR.instance.socket.emit('next', _this.data.id);
-            _this.details.btn.addClass('disabled');
+            _this.details.endAttack.addClass('disabled');
           });
 					google.maps.event.clearListeners(WAR.module.Map.map, 'click');
 					_this.$pieces.parent().hide();
@@ -257,6 +269,8 @@ WAR.module.Game = {
 					attackRandoms = attackRandoms.sort(function(a,b){return b-a;});
 					defenseRandoms = defenseRandoms.sort(function(a,b){return b-a;});
 
+          _this.details.attackDice.html('(' + attackRandoms.join(',') + ')');
+          _this.details.defenseDice.html('(' + defenseRandoms.join(',') + ')');
 					// console.log('attack', attackRandoms);
 					// console.log('defense', defenseRandoms);
 
@@ -313,9 +327,23 @@ WAR.module.Game = {
 						};
 
 						move(defense.lat, defense.lng);
+            
+            if (attack.markers.length > 1) {
+              _this.details.endAttack.hide();
+              _this.details.nextAttack.show().one('click', function () {
+                console.log('here');
+                google.maps.event.clearListeners(WAR.module.Map.map, 'click');
+                google.maps.event.addListener(WAR.module.Map.map, 'click', function (ev) {
+                  _this.attackHandler(ev);
+                });
+                _this.details.clear();
+                _this.details.endAttack.show();
+                _this.details.nextAttack.hide();
+              });
+            }
 
 						alert('Clique no novo território para mover mais exércitos');
-						
+
 						google.maps.event.clearListeners(WAR.module.Map.map, 'click');
 						google.maps.event.addListener(WAR.module.Map.map, 'click', function (e) {
 							if (attack.markers.length === 1) {
@@ -329,15 +357,9 @@ WAR.module.Game = {
 							});
 						});
 
-						window.done = function () {
-							google.maps.event.clearListeners(WAR.module.Map.map, 'click');
-							google.maps.event.addListener(WAR.module.Map.map, 'click', function (ev) {
-								_this.attackHandler(ev);
-							});
-						};
 					}
-				}
-				else {
+				} else {
+          _this.details.clear();
 					alert('Você não pode atacar o seu próprio estado.');
 				}
 			}
