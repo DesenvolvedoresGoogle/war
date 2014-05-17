@@ -104,8 +104,8 @@ var Game = function(options) {
         return marker;
     };
     app.buildMarkers = function() {
-        app.options.players.forEach(function(player, i) {
-            player.pinColor = app.pinColors[i];
+        _.each(app.options.players, function(player, username, players) {
+            player.pinColor = app.pinColors[_.keys(players).indexOf(username)];
             player.states.forEach(function(state) {
                 var marker = app.addMarker(state.lat, state.lng, player.pinColor);
                 state.markers = state.markers || [];
@@ -165,12 +165,13 @@ var StartScreen = function(game) {
             game.options = data;
             game.buildMarkers();
             app.$startScreen.modal("hide");
-            if (data.players[0].username === app.username) {
-                app.player = data.players[0];
-                app.enemy = data.players[1];
+            var ps = _.values(data.players);
+            if (ps[0].username === app.username) {
+                app.player = ps[0];
+                app.enemy = ps[1];
             } else {
-                app.player = data.players[1];
-                app.enemy = data.players[0];
+                app.player = ps[1];
+                app.enemy = ps[0];
             }
             $("#menu").find("#user-color").css("background-color", "#" + app.player.pinColor).end().find("#user-name").html(app.username).end().find("#user-stats").html(app.player.states.length + "/26 estados").end().show();
         });
@@ -183,7 +184,7 @@ var StartScreen = function(game) {
             console.log("add-marker: marker = ", marker);
             var state = marker.state;
             marker = game.addMarker(marker.lat, marker.lng, marker.color);
-            game.options.players.forEach(function(p) {
+            _.each(game.options.players, function(p) {
                 var s = p.states.filter(function(s) {
                     return s.acronym === state;
                 });
@@ -200,6 +201,23 @@ var StartScreen = function(game) {
             pieces = Math.floor(app.player.states.length / 2);
             app.$pieces.html(pieces).parent().show();
             google.maps.event.addListener(game.map, "click", play);
+        });
+        socket.on("remove-markers", function(obj) {
+            var from = _.map(game.options.players, function(p) {
+                return p.states.filter(function(s) {
+                    return s.acronym === obj.from;
+                })[0];
+            }).reduce(function(a, b) {
+                return a || b;
+            });
+            for (var i = 0; i < obj.count; i++) {
+                from.markers[0].setMap(null);
+                from.markers.splice(i, 1);
+            }
+        });
+        socket.on("change-state-owner", function(data) {
+            var state = app.options.players[data.from].states.splice(app.options.players[data.from].states.indexOf(state), 1);
+            app.options.players[data.to].states.push(state);
         });
         function play(ev) {
             game.getCountry(ev, function(stateSelected) {
@@ -288,22 +306,36 @@ var StartScreen = function(game) {
                         console.log("attack lost", attackLost);
                         console.log("defense lost", defenseLost);
                         console.log("defense count", defenseCount);
-                        var remove = function(from, count) {
-                            for (i = 0; i < count; i++) {
-                                from.markers[0].setMap(null);
-                                from.markers.splice(i, 1);
-                            }
-                        };
-                        remove(defense, defenseLost);
-                        remove(attack, attackLost);
+                        socket.emit("remove-markers", {
+                            from: attack.acronym,
+                            count: attackLost,
+                            gameId: game.options.id
+                        });
+                        socket.emit("remove-markers", {
+                            from: defense.acronym,
+                            count: defenseLost,
+                            gameId: game.options.id
+                        });
                         if (defenseLost === defenseCount) {
-                            app.enemy.states.splice(app.enemy.states.indexOf(defense), 1);
-                            app.player.states.push(defense);
+                            socket.emit("change-state-owner", {
+                                gameId: game.options.id,
+                                state: defense.acronym,
+                                from: app.enemy.username,
+                                to: app.player.username
+                            });
                             var move = function(lat, lng) {
-                                attack.markers[0].setMap(null);
-                                attack.markers.splice(0, 1);
-                                var marker = game.addMarker(lat, lng, app.player.pinColor);
-                                defense.markers.push(marker);
+                                socket.emit("remove-markers", {
+                                    gameId: game.options.id,
+                                    count: 1,
+                                    from: attack.acronym
+                                });
+                                socket.emit("add-marker", {
+                                    gameId: game.options.id,
+                                    lat: lat,
+                                    lng: lng,
+                                    color: app.player.pinColor,
+                                    state: defense.short_name
+                                });
                             };
                             move(defense.lat, defense.lng);
                             alert("Clique no novo território para mover mais exércitos");
