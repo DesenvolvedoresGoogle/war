@@ -136,12 +136,20 @@ var StartScreen = function(game) {
     app.bind = function() {
         app.btnNewGame.addEventListener("click", function(ev) {
             var username = app.$username.val();
+            if (!username) {
+                alert("Preencha o seu nome antes de criar um jogo");
+                return;
+            }
             console.log("new-game", username);
             socket.emit("new-game", username);
             app.$startScreen.find(".modal-body").html('<p class="text-center">Aguardando outro jogador...</p>').next().empty();
         });
         $(document).on("click", ".btn-enter-game", function() {
             var username = app.$username.val(), arrayUsers = [];
+            if (!username) {
+                alert("Preencha o seu nome antes de entrar no jogo");
+                return;
+            }
             var a = $(this).parent().prev().html();
             arrayUsers.push(username);
             arrayUsers.push(a);
