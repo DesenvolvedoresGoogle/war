@@ -82,7 +82,6 @@ io.on('connection', function(socket){
 
   socket.on('add-marker', function (marker) {
     var game = games[marker.gameId];
-    console.log(game, marker.gameId, games);
     game.players.forEach(function (player) {
       playing[player.username].emit('add-marker', marker);
     });
@@ -90,7 +89,6 @@ io.on('connection', function(socket){
 
   function next(gameId) {
     var player = games[gameId].players[index++ % 2];
-    console.log(player.username);
     playing[player.username].emit('play');
   }
   socket.on('next', next);
