@@ -60,8 +60,8 @@ Dispatcher.prototype.joinGame = function (players) {
 };
 
 Dispatcher.prototype.next = function (gameId) {
-  var username = Object.keys(Shared.games[gameId].players)[Shared.index];
-  Shared.index = Shared.index++ % 2;
+  var username = _.values(Shared.games[gameId].players)[Shared.index];
+  Shared.index = Shared.index ? 0 : 1;
   Shared.playing[username].emit('play');
 };
 
