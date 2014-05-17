@@ -67,7 +67,7 @@ Dispatcher.prototype.next = function (gameId) {
 
 Dispatcher.prototype.disconnect = function () {
   if (this.socket.player) {
-    if (Shared.waiting[this.player]) {
+    if (Shared.waiting[this.socket.player]) {
       delete Shared.waiting[this.socket.player];
     } else if (Shared.playing[this.socket.player]) {
       var gameId = Shared.playing[this.socket.player].gameId;
