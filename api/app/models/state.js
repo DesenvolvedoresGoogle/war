@@ -15,7 +15,7 @@ var StateSchema = {
 };
 
 var State = mongoose.model('State', StateSchema);
-State.allRandom = function (cb) {
+State.allRandom = function (cb, context) {
   State.find({}, function (err, states) {
     // Knuth shuffle
     for (var i = 0, l = states.length; i < l; i++) {
@@ -25,7 +25,7 @@ State.allRandom = function (cb) {
       states[j] = aux;
     }
 
-    cb(states);
+    cb.call(context, states);
   });
 };
 
