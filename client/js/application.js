@@ -129,7 +129,7 @@ var StartScreen = function(game) {
             $("#waiting-list").empty();
             app.$username.val("");
             for (var i = 0, len = data.length; i < len; i++) {
-                $("#waiting-list").append("\n					<tr>\n						<td>" + data[i] + '</td>\n            <td>\n						<a class="btn-enter-game" href="javascript:;">Entrar</a>\n					</td></tr>');
+                $("#waiting-list").append("\n					<tr>\n						<td>" + data[i] + '</td>\n            <td>\n						<button class="btn btn-primary btn-enter-game">Entrar</a>\n					</td></tr>');
             }
         });
     };
@@ -153,6 +153,11 @@ var StartScreen = function(game) {
             game.options = data;
             game.buildMarkers();
             app.$startScreen.modal("hide");
+        });
+        socket.on("win-wo", function() {
+            console.log("win-wo");
+            app.$startScreen.find(".modal-body").html("<h2>Você ganhou!</h2><p>Seu oponente desistiu do jogo...</p>").next().html('<button class="btn btn-primary" onclick="window.location.reload()">OK</button>');
+            app.$startScreen.modal("show");
         });
     };
     app.init();

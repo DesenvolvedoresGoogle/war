@@ -167,7 +167,7 @@ var StartScreen = function (game) {
 					<tr>
 						<td>' + data[i] + '</td>
             <td>
-						<a class="btn-enter-game" href="javascript:;">Entrar</a>
+						<button class="btn btn-primary btn-enter-game">Entrar</a>
 					</td></tr>');
 			}
 		});
@@ -206,6 +206,15 @@ var StartScreen = function (game) {
       game.buildMarkers();
       app.$startScreen.modal('hide');
 		});
+
+    socket.on('win-wo', function () {
+      console.log('win-wo');
+      app.$startScreen.find('.modal-body')
+        .html('<h2>Você ganhou!</h2><p>Seu oponente desistiu do jogo...</p>')
+        .next()
+        .html('<button class="btn btn-primary" onclick="window.location.reload()">OK</button>');
+      app.$startScreen.modal('show');
+    });
 	};
 
 	app.init();

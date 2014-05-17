@@ -11,14 +11,40 @@ var waiting = {};
 var games = [];
 var playing = {};
 
+io.set('log level', 1);
 io.on('connection', function(socket){
   socket.emit('games', Object.keys(waiting));
+
+  function update() {
+    socket.broadcast.emit('games', Object.keys(waiting));
+  }
 
   socket.on('new-game', function (player) {
     if (player) {
       waiting[player] = socket;
-      socket.emit('games', Object.keys(waiting));
-      socket.broadcast.emit('games', Object.keys(waiting));
+      socket.player = player;
+      update();
+    }
+  });
+
+  socket.on('disconnect', function () {
+    if (socket.player) {
+      if (waiting[socket.player]) {
+        delete waiting[socket.player];
+      } else if (playing[socket.player]) {
+        var gameId = playing[socket.player].gameId;
+        games[gameId].players.filter(function (p) {
+          return p !== socket.player;
+        }).forEach(function (player) {
+          playing[player.username].emit('win-wo');
+        });
+        
+        games[gameId].players.forEach(function (p) {
+          delete playing[p.username];
+        });
+        delete games[gameId];
+      }
+      update();
     }
   });
 
@@ -31,6 +57,7 @@ io.on('connection', function(socket){
         };
 
         playing[username] = waiting[username] || socket;
+        playing[username].player = username;
         delete waiting[username];
 
         return player;
@@ -44,6 +71,7 @@ io.on('connection', function(socket){
       games.push(game);
 
       game.players.forEach(function (player) {
+        playing[player.username].gameId = game.id;
         playing[player.username].emit('created-game', game);
       });
     });
