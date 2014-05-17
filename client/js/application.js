@@ -240,7 +240,10 @@ var StartScreen = function(game) {
                     var attack = _state;
                     _state = null;
                     if (!contains.length) {
-                        var number = parseInt(prompt("Com quantos exércitos você deseja atacar?"));
+                        if (!~possibilities[attack.acronym].indexOf(state.short_name)) {
+                            return alert("Só é possível atacar estados que fazem fronteira");
+                        }
+                        var number = parseInt(prompt("Com quantos exércitos você deseja atacar?"), 10);
                         var attackCount = (attack.markers || []).length - 1;
                         if (number < 1 || number > 3) {
                             return alert("Você só pode atacar com 1 a 3 exércitos");
