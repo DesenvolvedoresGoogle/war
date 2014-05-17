@@ -34,15 +34,18 @@ io.on('connection', function(socket){
         delete waiting[socket.player];
       } else if (playing[socket.player]) {
         var gameId = playing[socket.player].gameId;
-        games[gameId].players.filter(function (p) {
+        var game = games[gameId];
+
+        Object.keys(game.players).filter(function (p) {
           return p !== socket.player;
-        }).forEach(function (player) {
-          playing[player.username].emit('win-wo');
+        }).forEach(function (username) {
+          playing[username].emit('win-wo');
         });
         
-        games[gameId].players.forEach(function (p) {
-          delete playing[p.username];
+        Object.keys(game.players).forEach(function (p) {
+          delete playing[p];
         });
+
         delete games[gameId];
       }
       update();
@@ -51,7 +54,7 @@ io.on('connection', function(socket){
 
   socket.on('join-game', function (players) {
     State.allRandom(function (states) {
-      players = players.map(function (username) {
+      players = players.reduce(function (obj, username) {
         var player = {
           username: username,
           states: states.splice(0, 13),
@@ -61,8 +64,10 @@ io.on('connection', function(socket){
         playing[username].player = username;
         delete waiting[username];
 
-        return player;
-      });
+        obj[username] = player;
+
+        return obj;
+      }, {});
 
       var game = {
         id: games.length,
@@ -71,9 +76,9 @@ io.on('connection', function(socket){
 
       games.push(game);
 
-      game.players.forEach(function (player) {
-        playing[player.username].gameId = game.id;
-        playing[player.username].emit('created-game', game);
+      Object.keys(game.players).forEach(function (username) {
+        playing[username].gameId = game.id;
+        playing[username].emit('created-game', game);
       });
 
       next(game.id);
@@ -82,14 +87,28 @@ io.on('connection', function(socket){
 
   socket.on('add-marker', function (marker) {
     var game = games[marker.gameId];
-    game.players.forEach(function (player) {
-      playing[player.username].emit('add-marker', marker);
-    });
+    for (var username in game.players) {
+      playing[username].emit('add-marker', marker);
+    }
+  });
+
+  socket.on('remove-markers', function (target) {
+    var game = games[target.gameId];
+    for (var username in game.players) {
+      playing[username].emit('remove-markers', target);
+    }
+  });
+
+  socket.on('change-state-owner', function (data) {
+    var game = games[data.gameId];
+    for (var username in game.players) {
+      playing[username].emit('remove-markers', data);
+    }
   });
 
   function next(gameId) {
-    var player = games[gameId].players[index++ % 2];
-    playing[player.username].emit('play');
+    var username = Object.keys(games[gameId].players)[index++ % 2];
+    playing[username].emit('play');
   }
   socket.on('next', next);
 });
