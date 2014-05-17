@@ -33,6 +33,7 @@ var Game = function(options) {
     var app = {}, mapSettings = {
         zoom: 4,
         minZoom: 4,
+        maxZoom: 6,
         disableDefaultUI: true,
         center: new google.maps.LatLng(-14.0634424, -50.2827613)
     };
@@ -67,6 +68,16 @@ var Game = function(options) {
                     console.log("OVER_QUERY_LIMIT");
                 }
             });
+        });
+        // bounds of the desired area
+        var allowedBounds = new google.maps.LatLngBounds(new google.maps.LatLng(-28.1354884, -68.1965992), new google.maps.LatLng(-1.4372482, -40.0657399));
+        var lastValidCenter = app.map.getCenter();
+        google.maps.event.addListener(app.map, "center_changed", function() {
+            if (allowedBounds.contains(app.map.getCenter())) {
+                lastValidCenter = app.map.getCenter();
+                return;
+            }
+            app.map.panTo(lastValidCenter);
         });
     };
     app.getCountry = function(results) {
