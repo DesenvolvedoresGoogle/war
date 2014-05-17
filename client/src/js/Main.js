@@ -162,6 +162,11 @@ var StartScreen = function (game) {
 			var username = app.$username.val();
 			console.log('new-game', username);
 			socket.emit('new-game', username);
+
+      app.$startScreen.find('.modal-body')
+        .html('<p class="text-center">Aguardando outro jogador...</p>')
+        .next()
+        .empty();
 		});
 
 
