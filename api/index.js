@@ -31,7 +31,7 @@ io.on('connection', function(socket){
         };
 
         playing[username] = waiting[username] || socket;
-        delete waiting[player];
+        delete waiting[username];
 
         return player;
       });
