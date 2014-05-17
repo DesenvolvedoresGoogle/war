@@ -47,3 +47,25 @@ table tr td:last-child {
   display: none;
   margin-left: 50px;
 }
+
+
+
+
+#details {
+  width: 250px;
+  padding-bottom: 5px;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+
+  .table {
+    margin-bottom: 0;
+    border-top: 2px solid red;
+  }
+
+  .btn {
+    display: block;
+    margin: 0 auto;
+  }
+}
+

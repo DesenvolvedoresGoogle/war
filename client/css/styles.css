@@ -1,15 +1,15 @@
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/tadeu\/www\/js\/hackathon-war\/client\/src\/sass\/styles\.scss}line{font-family:\000033}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/gabrielneutzling\/www\/hackathon-war\/client\/src\/sass\/styles\.scss}line{font-family:\000033}}
 html, body, #game {
   width: 100%;
   height: 100%;
 }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/tadeu\/www\/js\/hackathon-war\/client\/src\/sass\/styles\.scss}line{font-family:\000038}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/gabrielneutzling\/www\/hackathon-war\/client\/src\/sass\/styles\.scss}line{font-family:\000038}}
 body {
   color: #444;
 }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/tadeu\/www\/js\/hackathon-war\/client\/src\/sass\/styles\.scss}line{font-family:\0000312}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/gabrielneutzling\/www\/hackathon-war\/client\/src\/sass\/styles\.scss}line{font-family:\0000312}}
 h1 {
   font-size: 6em;
   font-family: 'Gravitas One', cursive;
@@ -17,18 +17,18 @@ h1 {
   text-align: center;
 }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/tadeu\/www\/js\/hackathon-war\/client\/src\/sass\/styles\.scss}line{font-family:\0000319}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/gabrielneutzling\/www\/hackathon-war\/client\/src\/sass\/styles\.scss}line{font-family:\0000320}}
 table tr th:last-child,
 table tr td:last-child {
   text-align: center;
 }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/tadeu\/www\/js\/hackathon-war\/client\/src\/sass\/styles\.scss}line{font-family:\0000324}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/gabrielneutzling\/www\/hackathon-war\/client\/src\/sass\/styles\.scss}line{font-family:\0000324}}
 #start-screen {
   font-size: 1.4em;
 }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/tadeu\/www\/js\/hackathon-war\/client\/src\/sass\/styles\.scss}line{font-family:\0000328}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/gabrielneutzling\/www\/hackathon-war\/client\/src\/sass\/styles\.scss}line{font-family:\0000328}}
 #user-color {
   float: left;
   width: 20px;
@@ -36,7 +36,7 @@ table tr td:last-child {
   margin: 0 10px;
 }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/tadeu\/www\/js\/hackathon-war\/client\/src\/sass\/styles\.scss}line{font-family:\0000335}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/gabrielneutzling\/www\/hackathon-war\/client\/src\/sass\/styles\.scss}line{font-family:\0000335}}
 #menu {
   height: 27px;
   min-height: 27px;
@@ -44,13 +44,32 @@ table tr td:last-child {
   display: none;
 }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/tadeu\/www\/js\/hackathon-war\/client\/src\/sass\/styles\.scss}line{font-family:\0000342}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/gabrielneutzling\/www\/hackathon-war\/client\/src\/sass\/styles\.scss}line{font-family:\0000342}}
 #user-profile > * {
   float: left;
 }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/tadeu\/www\/js\/hackathon-war\/client\/src\/sass\/styles\.scss}line{font-family:\0000346}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/gabrielneutzling\/www\/hackathon-war\/client\/src\/sass\/styles\.scss}line{font-family:\0000346}}
 #army {
   display: none;
   margin-left: 50px;
+}
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/gabrielneutzling\/www\/hackathon-war\/client\/src\/sass\/styles\.scss}line{font-family:\0000354}}
+#details {
+  width: 250px;
+  padding-bottom: 5px;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/gabrielneutzling\/www\/hackathon-war\/client\/src\/sass\/styles\.scss}line{font-family:\0000361}}
+#details .table {
+  margin-bottom: 0;
+  border-top: 2px solid red;
+}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/gabrielneutzling\/www\/hackathon-war\/client\/src\/sass\/styles\.scss}line{font-family:\0000366}}
+#details .btn {
+  display: block;
+  margin: 0 auto;
 }
