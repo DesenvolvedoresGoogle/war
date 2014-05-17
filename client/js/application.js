@@ -207,6 +207,7 @@ WAR.module.Game = {
         this.$modal = $("#start-screen");
         this.$pieces = $("#points");
         this.details = {
+            table: $("#details table"),
             attack: $(".details-attack"),
             defense: $(".details-defense")
         };
@@ -237,9 +238,11 @@ WAR.module.Game = {
         WAR.instance.socket.on("play", function(marker) {
             console.log("play");
             $("#details").find(".btn").one("click", function() {
+                _this.details.table.css("border-top-color", "#" + _this.enemy.pinColor);
                 google.maps.event.clearListeners(WAR.module.Map.map, "click");
                 WAR.instance.socket.emit("next", _this.data.id);
             });
+            _this.details.table.css("border-top-color", "#" + _this.player.pinColor);
             _this.pieces = Math.floor(_this.player.states.length / 2);
             _this.$pieces.html(_this.pieces).parent().show();
             google.maps.event.addListener(WAR.module.Map.map, "click", function(ev) {
@@ -321,6 +324,7 @@ WAR.module.Game = {
             this.player = ps[1];
             this.enemy = ps[0];
         }
+        _this.details.table.css("border-top-color", "#" + _this.enemy.pinColor);
         $("#menu").find("#user-color").css("background-color", "#" + this.player.pinColor).end().find("#user-name").html(WAR.username).end().find("#user-stats").html(this.player.states.length + "/26 estados").end().show();
     },
     updateStats: function() {},

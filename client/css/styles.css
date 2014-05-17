@@ -66,7 +66,7 @@ table tr td:last-child {
 @media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/tadeu\/www\/js\/hackathon-war\/client\/src\/sass\/styles\.scss}line{font-family:\0000361}}
 #details .table {
   margin-bottom: 0;
-  border-top: 2px solid red;
+  border-top: 2px solid black;
 }
 @media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/tadeu\/www\/js\/hackathon-war\/client\/src\/sass\/styles\.scss}line{font-family:\0000366}}
 #details .btn {

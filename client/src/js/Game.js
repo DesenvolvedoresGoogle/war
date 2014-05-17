@@ -18,6 +18,7 @@ WAR.module.Game = {
 		this.$pieces = $('#points');
 
 		this.details = {
+      table: $('#details table'),
 			attack: $('.details-attack'),
 			defense: $('.details-defense')
 		};
@@ -60,10 +61,12 @@ WAR.module.Game = {
 		WAR.instance.socket.on('play', function (marker) {
       console.log('play');
       $('#details').find('.btn').one('click', function () {
+        _this.details.table.css('border-top-color', '#' + _this.enemy.pinColor);
         google.maps.event.clearListeners(WAR.module.Map.map, 'click');
         
         WAR.instance.socket.emit('next', _this.data.id);
       });
+      _this.details.table.css('border-top-color', '#' + _this.player.pinColor);
 
 			_this.pieces = Math.floor(_this.player.states.length / 2);
 			_this.$pieces.html(_this.pieces).parent().show();
@@ -146,6 +149,7 @@ WAR.module.Game = {
 
 		WAR.module.Menu.hideModal();
 
+
 		_.each(this.data.players, function (player, username, players) {
 			player.pinColor = _this.pinColors[_.keys(players).indexOf(username)];
 
@@ -166,6 +170,8 @@ WAR.module.Game = {
 			this.player = ps[1];
 			this.enemy = ps[0];
 		}
+    
+    _this.details.table.css('border-top-color', '#' + _this.enemy.pinColor);
 
 		$('#menu')
 			.find('#user-color')
