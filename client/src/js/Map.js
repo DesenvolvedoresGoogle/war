@@ -58,7 +58,8 @@ WAR.module.Map = {
 		return new google.maps.Marker({
 			position: new google.maps.LatLng(lat, lng),
 			map: this.map,
-			icon: pinImage
+			icon: pinImage,
+      clickable: false
 		});
 	},
 
