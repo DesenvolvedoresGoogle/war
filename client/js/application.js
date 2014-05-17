@@ -40,7 +40,6 @@ var Game = function(options) {
         app.options = options;
         app.setup();
         app.bind();
-        app.buildMarkers(app.options.players[0]);
     };
     app.setup = function() {
         app.game = document.getElementById("game");
@@ -104,7 +103,7 @@ var Game = function(options) {
 };
 
 var StartScreen = function() {
-    var app = {}, socket = io.connect("http://192.168.2.1:3000");
+    var app = {}, socket = io.connect("http://localhost:3000");
     app.init = function() {
         app.setup();
         app.bind();
@@ -132,17 +131,15 @@ var StartScreen = function() {
             var a = $(this).parent().prev().html();
             arrayUsers.push(username);
             arrayUsers.push(a);
-            console.log("join-game", arrayUsers);
-            return false;
             socket.emit("join-game", arrayUsers);
         });
         socket.on("created-game", function(data) {
-            console.log(data);
+            new Game();
         });
     };
     app.init();
 };
 
-new StartScreen();
-
 new Game();
+
+new StartScreen();
