@@ -3,7 +3,7 @@
 WAR.module.Game = {
 	init: function (data) {
 		this.data = data;
-		console.log('=========>', this.data);
+		// console.log('=========>', this.data);
 		this.setup();
 		this.create();
 		this.events();
@@ -16,13 +16,18 @@ WAR.module.Game = {
 
 		this.$modal = $('#start-screen');
 		this.$pieces = $('#points');
+
+		this.details = {
+			attack: $('.details-attack'),
+			defense: $('.details-defense')
+		};
 	},
 
 	events: function () {
 		var _this = this;
 
 		WAR.instance.socket.on('win-wo', function () {
-			console.log('win-wo');
+			// console.log('win-wo');
 			_this.$modal.find('.modal-body')
 				.html('<h2>Você ganhou!</h2><p>Seu oponente desistiu do jogo...</p>')
 				.next()
@@ -32,7 +37,7 @@ WAR.module.Game = {
 		});
 
 		WAR.instance.socket.on('add-marker', function (marker) {
-			console.log('add-marker: marker = ', marker);
+			// console.log('add-marker: marker = ', marker);
 			var state = marker.state;
 
 			marker = WAR.module.Map.addMarker(marker.lat, marker.lng, marker.color);
@@ -43,7 +48,7 @@ WAR.module.Game = {
 				});
 
 				if (s.length) {
-					console.log('add-marker: found state', s[0]);
+					// console.log('add-marker: found state', s[0]);
 					s[0].markers = s[0].markers || [];
 					s[0].markers.push(marker);
 				}
@@ -53,7 +58,7 @@ WAR.module.Game = {
 		this.pieces = null;
 
 		WAR.instance.socket.on('play', function (marker) {
-			console.log('play');
+			// console.log('play');
 			_this.pieces = Math.floor(_this.player.states.length / 2);
 			_this.$pieces.html(_this.pieces).parent().show();
 			google.maps.event.addListener(WAR.module.Map.map, 'click', function (ev) {
@@ -95,7 +100,11 @@ WAR.module.Game = {
 	play: function (ev) {
 		var _this = this;
 
-    this._state = null;
+		this._state = null;
+
+		$('#details').find('.btn').one('click', function () {
+			WAR.instance.socket.emit('next', _this.data.id);
+		});
 
 		WAR.module.Map.getCountry(ev, function (stateSelected) {
 			var contains = _this.player.states.filter(function (s) {
@@ -103,7 +112,7 @@ WAR.module.Game = {
 			});
 
 			if (contains.length) {
-				console.log(stateSelected.short_name);
+				// console.log(stateSelected.short_name);
 
 				WAR.instance.socket.emit('add-marker', {
 					gameId: _this.data.id,
@@ -172,7 +181,7 @@ WAR.module.Game = {
 	},
 
 	attackHandler: function (ev) {
-		console.log('attackHandler');
+		// console.log('attackHandler');
 
 		var _this = this;
 
@@ -185,6 +194,7 @@ WAR.module.Game = {
 			if (!_this._state) {
 				if (contains.length) {
 					_this._state = contains[0];
+					_this.details.attack.text(contains[0].acronym);
 				}
 			}
 			else {
@@ -195,7 +205,8 @@ WAR.module.Game = {
 					if (!~possibilities[attack.acronym].indexOf(state.short_name)) {
 						return alert('Só é possível atacar estados que fazem fronteira');
 					}
-          console.log(attack.markers.length, attack, attack.markers);
+
+					// console.log(attack.markers.length, attack, attack.markers);
 					
 					var number = parseInt(prompt('Com quantos exércitos você deseja atacar?'), 10),
 						attackCount = (attack.markers || []).length - 1;
@@ -215,7 +226,9 @@ WAR.module.Game = {
 						return enemyState.acronym === state.short_name;
 					})[0];
 
-					console.log('defense:', defense.markers.length, defense.markers);
+					_this.details.defense.text(defense.acronym);
+
+					// console.log('defense:', defense.markers.length, defense.markers);
 					var defenseCount = Math.min((defense.markers || []).length, attackCount);
 					var attackRandoms = [];
 					var defenseRandoms = [];
@@ -225,7 +238,7 @@ WAR.module.Game = {
 						for (i = 0; i < n; i++) {
 							container.push(1 + Math.floor(Math.random() * 6));
 						}
-						console.log(container);
+						// console.log(container);
 					};
 
 					random(attackCount, attackRandoms);
@@ -234,8 +247,8 @@ WAR.module.Game = {
 					attackRandoms = attackRandoms.sort(function(a,b){return b-a;});
 					defenseRandoms = defenseRandoms.sort(function(a,b){return b-a;});
 
-					console.log('attack', attackRandoms);
-					console.log('defense', defenseRandoms);
+					// console.log('attack', attackRandoms);
+					// console.log('defense', defenseRandoms);
 
 					var defenseLost = 0;
 					var attackLost = 0;
@@ -249,9 +262,9 @@ WAR.module.Game = {
 					}
 
 					defenseCount = (defense.markers || []).length;
-					console.log('attack lost', attackLost);
-					console.log('defense lost', defenseLost);
-					console.log('defense count', defenseCount);
+					// console.log('attack lost', attackLost);
+					// console.log('defense lost', defenseLost);
+					// console.log('defense count', defenseCount);
 
 					WAR.instance.socket.emit('remove-markers', {
 						from: attack.acronym,

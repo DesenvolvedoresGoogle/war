@@ -8,10 +8,10 @@ var possibilities = {
     BA: [ "SE", "AL", "PE", "PI", "TO", "GO", "MG", "ES" ],
     CE: [ "RN", "PI", "PB", "PE" ],
     ES: [ "BA", "MG", "RJ" ],
-    GO: [ "MS", "MT", "TO", "BA" ],
+    GO: [ "MS", "MT", "TO", "BA", "MG" ],
     MA: [ "PI", "TO", "PA" ],
     MG: [ "SP", "GO", "BA", "ES", "RJ" ],
-    MS: [ "GO", "MG", "SP", "PR" ],
+    MS: [ "GO", "MG", "SP", "PR", "MT" ],
     MT: [ "RO", "AM", "PA", "TO", "GO", "MS" ],
     PA: [ "AP", "AM", "RR", "MT", "TO", "MA" ],
     PB: [ "RN", "CE", "PE" ],
@@ -82,7 +82,8 @@ WAR.module.Map = {
         return new google.maps.Marker({
             position: new google.maps.LatLng(lat, lng),
             map: this.map,
-            icon: pinImage
+            icon: pinImage,
+            clickable: false
         });
     },
     getCountry: function(ev, callback) {
@@ -194,7 +195,7 @@ WAR.module.Menu = {
 WAR.module.Game = {
     init: function(data) {
         this.data = data;
-        console.log("=========>", this.data);
+        // console.log('=========>', this.data);
         this.setup();
         this.create();
         this.events();
@@ -205,16 +206,20 @@ WAR.module.Game = {
         this.pinColors = [ "FF0000", "00FF00" ];
         this.$modal = $("#start-screen");
         this.$pieces = $("#points");
+        this.details = {
+            attack: $(".details-attack"),
+            defense: $(".details-defense")
+        };
     },
     events: function() {
         var _this = this;
         WAR.instance.socket.on("win-wo", function() {
-            console.log("win-wo");
+            // console.log('win-wo');
             _this.$modal.find(".modal-body").html("<h2>Você ganhou!</h2><p>Seu oponente desistiu do jogo...</p>").next().html('<button class="btn btn-primary" onclick="window.location.reload()">OK</button>');
             WAR.module.Menu.showModal();
         });
         WAR.instance.socket.on("add-marker", function(marker) {
-            console.log("add-marker: marker = ", marker);
+            // console.log('add-marker: marker = ', marker);
             var state = marker.state;
             marker = WAR.module.Map.addMarker(marker.lat, marker.lng, marker.color);
             _.each(_this.data.players, function(p) {
@@ -222,7 +227,7 @@ WAR.module.Game = {
                     return s.acronym === state;
                 });
                 if (s.length) {
-                    console.log("add-marker: found state", s[0]);
+                    // console.log('add-marker: found state', s[0]);
                     s[0].markers = s[0].markers || [];
                     s[0].markers.push(marker);
                 }
@@ -230,7 +235,7 @@ WAR.module.Game = {
         });
         this.pieces = null;
         WAR.instance.socket.on("play", function(marker) {
-            console.log("play");
+            // console.log('play');
             _this.pieces = Math.floor(_this.player.states.length / 2);
             _this.$pieces.html(_this.pieces).parent().show();
             google.maps.event.addListener(WAR.module.Map.map, "click", function(ev) {
@@ -245,26 +250,37 @@ WAR.module.Game = {
             }).reduce(function(a, b) {
                 return a || b;
             });
-            console.log(from);
             for (var i = 0; i < obj.count; i++) {
                 from.markers[0].setMap(null);
                 from.markers.splice(i, 1);
             }
         });
         WAR.instance.socket.on("change-state-owner", function(data) {
-            var state = _this.data.players[data.from].states.splice(_this.data.players[data.from].states.indexOf(state), 1);
+            var players = _this.data.players;
+            var from = players[data.from];
+            var state, index, length = from.states.length;
+            for (index = 0; index < length; index++) {
+                state = from.states[index];
+                if (state.acronym === data.state) {
+                    break;
+                }
+            }
+            from.states.splice(index, 1);
             _this.data.players[data.to].states.push(state);
         });
     },
     play: function(ev) {
         var _this = this;
         this._state = null;
+        $("#details").find(".btn").one("click", function() {
+            WAR.instance.socket.emit("next", _this.data.id);
+        });
         WAR.module.Map.getCountry(ev, function(stateSelected) {
             var contains = _this.player.states.filter(function(s) {
                 return s.acronym === stateSelected.short_name;
             });
             if (contains.length) {
-                console.log(stateSelected.short_name);
+                // console.log(stateSelected.short_name);
                 WAR.instance.socket.emit("add-marker", {
                     gameId: _this.data.id,
                     lat: ev.latLng.lat(),
@@ -308,7 +324,7 @@ WAR.module.Game = {
     },
     updateStats: function() {},
     attackHandler: function(ev) {
-        console.log("attackHandler");
+        // console.log('attackHandler');
         var _this = this;
         WAR.module.Map.getCountry(ev, function(state) {
             var contains = _this.player.states.filter(function(s) {
@@ -317,6 +333,7 @@ WAR.module.Game = {
             if (!_this._state) {
                 if (contains.length) {
                     _this._state = contains[0];
+                    _this.details.attack.text(contains[0].acronym);
                 }
             } else {
                 var attack = _this._state;
@@ -325,6 +342,7 @@ WAR.module.Game = {
                     if (!~possibilities[attack.acronym].indexOf(state.short_name)) {
                         return alert("Só é possível atacar estados que fazem fronteira");
                     }
+                    // console.log(attack.markers.length, attack, attack.markers);
                     var number = parseInt(prompt("Com quantos exércitos você deseja atacar?"), 10), attackCount = (attack.markers || []).length - 1;
                     if (number < 1 || number > 3) {
                         return alert("Você só pode atacar com 1 a 3 exércitos");
@@ -337,7 +355,8 @@ WAR.module.Game = {
                     var defense = _this.enemy.states.filter(function(enemyState) {
                         return enemyState.acronym === state.short_name;
                     })[0];
-                    console.log("defense:", defense.markers.length, defense.markers);
+                    _this.details.defense.text(defense.acronym);
+                    // console.log('defense:', defense.markers.length, defense.markers);
                     var defenseCount = Math.min((defense.markers || []).length, attackCount);
                     var attackRandoms = [];
                     var defenseRandoms = [];
@@ -346,7 +365,6 @@ WAR.module.Game = {
                         for (i = 0; i < n; i++) {
                             container.push(1 + Math.floor(Math.random() * 6));
                         }
-                        console.log(container);
                     };
                     random(attackCount, attackRandoms);
                     random(defenseCount, defenseRandoms);
@@ -356,8 +374,8 @@ WAR.module.Game = {
                     defenseRandoms = defenseRandoms.sort(function(a, b) {
                         return b - a;
                     });
-                    console.log("attack", attackRandoms);
-                    console.log("defense", defenseRandoms);
+                    // console.log('attack', attackRandoms);
+                    // console.log('defense', defenseRandoms);
                     var defenseLost = 0;
                     var attackLost = 0;
                     for (i = 0; i < Math.min(defenseCount, attackCount); i++) {
@@ -368,9 +386,9 @@ WAR.module.Game = {
                         }
                     }
                     defenseCount = (defense.markers || []).length;
-                    console.log("attack lost", attackLost);
-                    console.log("defense lost", defenseLost);
-                    console.log("defense count", defenseCount);
+                    // console.log('attack lost', attackLost);
+                    // console.log('defense lost', defenseLost);
+                    // console.log('defense count', defenseCount);
                     WAR.instance.socket.emit("remove-markers", {
                         from: attack.acronym,
                         count: attackLost,
@@ -399,7 +417,7 @@ WAR.module.Game = {
                                 lat: lat,
                                 lng: lng,
                                 color: _this.player.pinColor,
-                                state: defense.short_name
+                                state: defense.acronym
                             });
                         };
                         move(defense.lat, defense.lng);
