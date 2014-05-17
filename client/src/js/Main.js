@@ -149,7 +149,6 @@ var StartScreen = function (game) {
 		
 		socket.on('games', function (data) {
 			$('#waiting-list').empty();
-      app.$username.val('');
 			
 			for (var i = 0, len = data.length; i < len; i++) {
 				$('#waiting-list').append('
@@ -166,6 +165,8 @@ var StartScreen = function (game) {
 	app.bind = function () {
 		app.btnNewGame.addEventListener('click', function (ev) {
 			app.username = app.$username.val();
+      app.$username.val('');
+
       if (!app.username) {
         alert('Preencha o seu nome antes de criar um jogo');
         return;
@@ -183,6 +184,7 @@ var StartScreen = function (game) {
 
 		$(document).on('click', '.btn-enter-game', function () {
 			app.username = app.$username.val();
+      app.$username.val('');
 
       if (!app.username) {
         alert('Preencha o seu nome antes de entrar no jogo');
@@ -268,7 +270,7 @@ var StartScreen = function (game) {
             if (!pieces) {
               google.maps.event.clearListeners(game.map, 'click');
               app.$pieces.parent().hide();
-              alert('atacar!');
+              socket.emit('next', game.options.id);
             } else {
               app.$pieces.html(pieces);
             }
