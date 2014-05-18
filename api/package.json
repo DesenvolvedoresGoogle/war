@@ -17,5 +17,8 @@
     "lodash": "^2.4.1",
     "mongoose": "^3.8.9",
     "socket.io": "^0.9.16"
+  },
+  "engines": {
+    "node": "0.10.x"
   }
 }

@@ -2,9 +2,9 @@
 
 var mongoose = require('mongoose');
 var Dispatcher = require('./app/dispatcher');
-var io = require('socket.io').listen(3000, '0.0.0.0');
 
-mongoose.connect('mongodb://localhost/hackathon-war-dev');
+mongoose.connect(process.env.MONGOLAB_URI ||
+  'mongodb://localhost/hackathon-war-dev');
 
 var Shared = {
   waiting: {},
@@ -13,8 +13,29 @@ var Shared = {
   index: 0
 };
 
-io.set('log level', 1);
-io.on('connection', function(socket){
+var app = require('http').createServer(handler),
+  io = require('socket.io').listen(app),
+  fs = require('fs');
+
+console.log('Listening on %d...', process.env.PORT || 3000);
+app.listen(process.env.PORT || 3000);
+
+function handler(req, res) {
+  var url = req.url === '/' ? '/index.html' : req.url;
+  console.log(url);
+  fs.readFile(__dirname + '/../client' + url,
+  function (err, data) {
+    if (err) {
+      res.writeHead(500);
+      return res.end('Error loading game...');
+    }
+
+    res.writeHead(200);
+    res.end(data);
+  });
+}
+
+io.sockets.on('connection', function (socket) {
   var dispatcher = new Dispatcher(socket, Shared);
 
   socket.on('disconnect', dispatcher.disconnect);
