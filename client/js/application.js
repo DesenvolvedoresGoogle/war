@@ -281,6 +281,7 @@ WAR.module.Game = {
             }
             from.states.splice(index, 1);
             _this.data.players[data.to].states.push(state);
+            $("#user-stats").html(_this.player.states.length + "/26 estados");
         });
     },
     play: function(ev) {
