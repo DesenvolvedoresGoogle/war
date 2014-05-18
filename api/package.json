@@ -3,9 +3,6 @@
   "version": "0.0.0",
   "description": "GDG Hackacthonn War board game project",
   "main": "index.js",
-  "scripts": {
-    "test": "mocha test/**/*_test.js"
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/gneutzling/hackathon-war"
@@ -17,15 +14,8 @@
   },
   "homepage": "https://github.com/gneutzling/hackathon-war",
   "dependencies": {
-    "body-parser": "^1.2.0",
-    "express": "^4.2.0",
     "lodash": "^2.4.1",
     "mongoose": "^3.8.9",
-    "morgan": "^1.0.1",
     "socket.io": "^0.9.16"
-  },
-  "devDependencies": {
-    "chai": "^1.9.1",
-    "mocha": "^1.18.2"
   }
 }
