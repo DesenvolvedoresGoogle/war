@@ -3,19 +3,19 @@
 var possibilities = {
 	AC: ['AM', 'RO'],
 	AM: ['AC', 'RO', 'RR', 'PA', 'MT'],
-	AL: ['SE', 'PE', 'BH'],
+	AL: ['SE', 'PE', 'BA'],
 	AP: ['PA'],
 	BA: ['SE', 'AL', 'PE', 'PI', 'TO', 'GO', 'MG', 'ES'], 
 	CE: ['RN', 'PI', 'PB', 'PE'],
 	ES: ['BA', 'MG', 'RJ'],
 	GO: ['MS', 'MT', 'TO', 'BA', 'MG'], 
 	MA: ['PI', 'TO', 'PA'],
-	MG: ['SP', 'GO', 'BA', 'ES', 'RJ'], 
+	MG: ['SP', 'GO', 'BA', 'ES', 'RJ', 'MS'], 
 	MS: ['GO', 'MG', 'SP', 'PR', 'MT'], 
 	MT: ['RO', 'AM', 'PA', 'TO', 'GO', 'MS'], 
 	PA: ['AP', 'AM', 'RR', 'MT', 'TO', 'MA'], 
 	PB: ['RN', 'CE', 'PE'],
-	PE: ['SE', 'BA', 'PI', 'CE', 'PB'],
+	PE: ['SE', 'BA', 'PI', 'CE', 'PB', 'AL'],
 	PI: ['CE', 'MA', 'TO', 'BA', 'PE'], 
 	PR: ['MS', 'SP', 'SC'], 
 	RJ: ['SP', 'MG', 'ES'],
@@ -26,7 +26,7 @@ var possibilities = {
 	SC: ['PR', 'RS'], 
 	SE: ['AL', 'BA'],
 	SP: ['MS', 'MG', 'PR', 'RJ'], 
-	TO: ['MA', 'GO', 'PA', 'PI', 'BH', 'MT'], 
+	TO: ['MA', 'GO', 'PA', 'PI', 'BA', 'MT'], 
 };
 
 var WAR = {
