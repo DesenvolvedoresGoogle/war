@@ -32,6 +32,7 @@ var states = [
   ['Tocantins', 'TO', '-9.3180492', '-48.219068']
 ];
 
+var counter = 0;
 states.forEach(function (state) {
   new State({
     name: state[0],
@@ -39,6 +40,12 @@ states.forEach(function (state) {
     lat: state[2],
     lng: state[3]
   }).save(function (err) {
-    console.error(err);
+    if (err) {
+      console.error(err);
+    }
+    counter ++;
+    if (counter === states.length) {
+      mongoose.connection.close();
+    }
   });
 });
