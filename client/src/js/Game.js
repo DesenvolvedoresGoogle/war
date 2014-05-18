@@ -94,6 +94,7 @@ WAR.module.Game = {
 		});
 
 		WAR.instance.socket.on('remove-markers', function (obj) {
+      console.log(obj);
 			var from = _.map(_this.data.players, function (p) {
 				return p.states.filter(function (s) {
 					return s.acronym === obj.from;
@@ -102,9 +103,9 @@ WAR.module.Game = {
 				return a || b;
 			});
 
+      console.log(from, obj.count);
 			for (var i = 0; i < obj.count; i++) {
-				from.markers[0].setMap(null);
-				from.markers.splice(i, 1);
+				from.markers.shift().setMap(null);
 			}
 		});
 
