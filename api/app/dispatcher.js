@@ -100,4 +100,14 @@ Dispatcher.prototype.notifyAllPlayers = function (event) {
   });
 };
 
+Dispatcher.prototype.syncMenu = function (menu) {
+  var gameId = Shared.playing[this.socket.player].gameId;
+  var game = Shared.games[gameId];
+  _(game.players).filter(function (_, key) {
+    return key !== this.socket.player;
+  }, this).each(function (p) {
+    Shared.playing[p.username].emit('sync-menu', menu);
+  });
+};
+
 module.exports = Dispatcher;

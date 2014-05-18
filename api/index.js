@@ -21,6 +21,7 @@ io.on('connection', function(socket){
   socket.on('new-game', dispatcher.newGame);
   socket.on('join-game', dispatcher.joinGame);
   socket.on('next', dispatcher.next);
+  socket.on('sync-menu', dispatcher.syncMenu);
 
 
   dispatcher.notifyAllPlayers('add-marker');

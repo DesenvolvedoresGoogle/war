@@ -206,6 +206,9 @@ WAR.module.Game = {
         this.pinColors = [ "FF0000", "00FF00" ];
         this.$modal = $("#start-screen");
         this.$pieces = $("#points");
+        this.fetchDetails();
+    },
+    fetchDetails: function() {
         this.details = {
             clear: function() {
                 this.nextAttack.show();
@@ -214,6 +217,7 @@ WAR.module.Game = {
                 this.defense.empty();
                 this.attackDice.empty();
                 this.defenseDice.empty();
+                this.sync();
             },
             nextAttack: $("#details .next-attack"),
             endAttack: $("#details .end-attack"),
@@ -221,7 +225,10 @@ WAR.module.Game = {
             defenseDice: $("#details .defense-dice"),
             table: $("#details table"),
             attack: $(".details-attack"),
-            defense: $(".details-defense")
+            defense: $(".details-defense"),
+            sync: function() {
+                WAR.instance.socket.emit("sync-menu", $("#details").html());
+            }
         };
     },
     events: function() {
@@ -230,6 +237,9 @@ WAR.module.Game = {
             // console.log('win-wo');
             _this.$modal.find(".modal-body").html("<h2>Você ganhou!</h2><p>Seu oponente desistiu do jogo...</p>").next().html('<button class="btn btn-primary" onclick="window.location.reload()">OK</button>');
             WAR.module.Menu.showModal();
+        });
+        WAR.instance.socket.on("sync-menu", function(html) {
+            $("#details").html(html);
         });
         WAR.instance.socket.on("add-marker", function(marker) {
             // console.log('add-marker: marker = ', marker);
@@ -249,6 +259,7 @@ WAR.module.Game = {
         this.pieces = null;
         WAR.instance.socket.on("play", function(marker) {
             console.log("play");
+            _this.fetchDetails();
             _this.details.table.css("border-top-color", "#" + _this.player.pinColor);
             _this.pieces = Math.floor(_this.player.states.length / 2);
             _this.$pieces.html(_this.pieces).parent().show();
@@ -354,6 +365,7 @@ WAR.module.Game = {
                 if (contains.length) {
                     _this._state = contains[0];
                     _this.details.attack.text(contains[0].acronym);
+                    _this.details.sync();
                 }
             } else {
                 var attack = _this._state;
@@ -363,7 +375,15 @@ WAR.module.Game = {
                         return alert("Só é possível atacar estados que fazem fronteira");
                     }
                     // console.log(attack.markers.length, attack, attack.markers);
+                    var defense = _this.enemy.states.filter(function(enemyState) {
+                        return enemyState.acronym === state.short_name;
+                    })[0];
+                    _this.details.defense.text(defense.acronym);
+                    _this.details.sync();
                     var number = parseInt(prompt("Com quantos exércitos você deseja atacar?"), 10), attackCount = (attack.markers || []).length - 1;
+                    if (isNaN(number)) {
+                        return _this.details.clear();
+                    }
                     if (number < 1 || number > 3) {
                         return alert("Você só pode atacar com 1 a 3 exércitos");
                     } else {
@@ -372,10 +392,6 @@ WAR.module.Game = {
                         }
                     }
                     attackCount = number;
-                    var defense = _this.enemy.states.filter(function(enemyState) {
-                        return enemyState.acronym === state.short_name;
-                    })[0];
-                    _this.details.defense.text(defense.acronym);
                     // console.log('defense:', defense.markers.length, defense.markers);
                     var defenseCount = Math.min((defense.markers || []).length, attackCount);
                     var attackRandoms = [];
@@ -396,6 +412,7 @@ WAR.module.Game = {
                     });
                     _this.details.attackDice.html("(" + attackRandoms.join(",") + ")");
                     _this.details.defenseDice.html("(" + defenseRandoms.join(",") + ")");
+                    _this.details.sync();
                     // console.log('attack', attackRandoms);
                     // console.log('defense', defenseRandoms);
                     var defenseLost = 0;
