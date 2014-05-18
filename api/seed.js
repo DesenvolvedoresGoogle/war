@@ -1,7 +1,8 @@
 var mongoose = require('mongoose');
 var State = require('./app/models/state');
 
-mongoose.connect('mongodb://localhost/hackathon-war-dev');
+mongoose.connect(process.env.MONGOLAB_URI ||
+  'mongodb://localhost/hackathon-war-dev');
 
 var states = [
   ['Acre', 'AC', '-9.1285244', '-70.3077931'],
