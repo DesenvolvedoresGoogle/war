@@ -393,7 +393,7 @@ WAR.module.Game = {
                     }
                     attackCount = number;
                     // console.log('defense:', defense.markers.length, defense.markers);
-                    var defenseCount = Math.min((defense.markers || []).length, attackCount);
+                    var defenseCount = Math.min((defense.markers || []).length, 3);
                     var attackRandoms = [];
                     var defenseRandoms = [];
                     var i;
