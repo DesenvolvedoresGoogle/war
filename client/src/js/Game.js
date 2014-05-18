@@ -22,8 +22,8 @@ WAR.module.Game = {
   fetchDetails: function () {
 		this.details = {
       clear: function () {
-        this.nextAttack.show();
-        this.endAttack.hide();
+        this.nextAttack.hide();
+        this.endAttack.show();
         this.attack.empty();
         this.defense.empty();
         this.attackDice.empty();
@@ -356,8 +356,6 @@ WAR.module.Game = {
                   _this.attackHandler(ev);
                 });
                 _this.details.clear();
-                _this.details.endAttack.show();
-                _this.details.nextAttack.hide();
               });
             }
 
