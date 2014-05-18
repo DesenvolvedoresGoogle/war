@@ -228,6 +228,7 @@ WAR.module.Game = {
 
 			if (!_this._state) {
 				if (contains.length) {
+          _this.details.clear();
 					_this._state = contains[0];
 					_this.details.attack.text(contains[0].acronym);
           _this.details.sync();
